@@ -1,0 +1,29 @@
+@import '~@/uni.scss';
+page{
+	background: $uni-bg-color;
+	font-size: $uni-font-size-base;
+	color: $uni-text-color-normal;
+	.body{
+		// padding-top: 25upx;
+		// padding-bottom: 25upx;
+		margin-bottom: 15upx;
+		background: $uni-bg-color-white;
+		.title{
+			color: $uni-text-color;
+			font-size: $uni-font-size-subtitle;
+			font-weight: 550;
+		}
+		.address{
+			width: 70%;
+		}
+	}
+	.footer{
+		color: $uni-text-orange;
+		font-size: $uni-font-size-lg;
+		background: $uni-bg-color-white;
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+		height: $uni-height;
+	}
+}
