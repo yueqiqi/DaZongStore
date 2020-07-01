@@ -14,10 +14,23 @@ import {
   INCREMENT_FOOD_COUNT,
   DECREMENT_FOOD_COUNT,
   CLEAR_CART,
-  RECEIVE_SEARCH_SHOPS
+  RECEIVE_SEARCH_SHOPS,
+	
+	ADDGOODS_CHOOSE_ADDRESS,
+	PO_ADDRESS,
+	PO_SHOP,
 } from './mutation-types'
 
 export default {
+	[PO_SHOP](state,goods){
+		state.POShop=goods
+	},
+	[PO_ADDRESS](state,address){
+		state.POAddress=address
+	},
+	[ADDGOODS_CHOOSE_ADDRESS](state,address){
+		state.addGoodsAdd=address
+	},
   [RECEIVE_ADDRESS] (state,{address}) {
     state.address = address
   },

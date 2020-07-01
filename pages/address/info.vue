@@ -31,7 +31,7 @@
 				<button class="btn">{{title=='add'?'新增':'修改'}}</button>
 			</view>
 		<pickerAddress v-model="addressShow" @confirm="addresspick" />
-		<pickerTime ref='timePicker' :type='timeType'  @rundata='kxdatetime' >
+		<pickerTime ref='timePicker' :start='startdate' default='start'  @rundata='kxdatetime' >
 		</pickerTime>
 	</view>
 </template>
@@ -46,7 +46,7 @@ export default {
 	},
 	data() {
 		return {
-			timeType:'',
+			startdate:'2020-01-01 00:00',
 			timeShow: true,
 			addressShow: false,
 			province: '省',

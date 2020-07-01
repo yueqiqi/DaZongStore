@@ -14,6 +14,31 @@
 </script>
 
 <style lang="scss">
+	.bg-white{
+		background: $uni-bg-color-white;
+	}
+	.uImg-m{
+		width: 150upx;
+		height: 150upx;
+	}
+	.uImg-l{
+		width: 180upx;
+		height: 180upx;
+	}
+	.uImg{
+		width: 120upx;
+		height: 120upx;
+	}
+	/* 隐藏滚动条 */
+		/* #ifdef H5 */
+	::-webkit-scrollbar {
+				display: none;
+		    width: 0!important;
+				-webkit-appearance: none;
+		    height: 0!important;
+		    background-color: transparent!important;
+		}
+		/* #endif */
 	.font{
 		color: $uni-text-color;
 		font-size: $uni-font-size-lg;
@@ -24,6 +49,7 @@
 		border: none;
 		color: #fff;
 		width: 100%;
+		border: 1upx solid $uni-color-orange;
 	}
 	.btn-normal{
 		background: $uni-bg-color-white;
@@ -41,7 +67,7 @@
 		font-family: texticons;
 		font-weight: normal;
 		font-style: normal;
-		src: url('https://at.alicdn.com/t/font_1713587_d91nbnlkjnl.ttf') format('truetype');
+		src: url('https://at.alicdn.com/t/font_1911402_g2o3c4aoagu.ttf') format('truetype');
 	}
 	.over {
 		white-space: nowrap;
@@ -73,6 +99,24 @@
 	.border-bottom{
 		border-bottom: 1upx solid $uni-border-color;
 	}
+	.pt-xs{
+		padding-top: 10upx;
+	}
+	.pb-xs{
+		padding-bottom: 10upx;
+	}
+	.pt-sm{
+		padding-top: 20upx;
+	}
+	.pb-sm{
+		padding-bottom: 20upx;
+	}
+	.pl{
+		padding-left: 30upx;
+	}
+	.pr{
+		padding-right: 30upx;
+	}
 	.plr{
 		padding-left: 30upx;
 		padding-right: 30upx;
@@ -82,6 +126,18 @@
 	}
 	.pb{
 		padding-bottom: 30upx;
+	}
+	.ml-xs{
+		margin-left: 10upx;
+	}
+	.mt-xs{
+		margin-top: 10upx;
+	}
+	.mb-xs{
+		margin-bottom: 10upx;
+	}
+	.mb-sm{
+		margin-bottom: 20upx;
 	}
 	.mt-sm{
 		margin-top: 20upx;
@@ -103,6 +159,9 @@
 	}
 	.mb{
 		margin-bottom: 30upx;
+	}
+	.card:last-child{
+		border: 0;
 	}
 	.card{
 		background: #FFFFFF;

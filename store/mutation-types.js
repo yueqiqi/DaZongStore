@@ -17,3 +17,9 @@ export const DECREMENT_FOOD_COUNT = 'decrement_food_count' // 减少food中的co
 export const CLEAR_CART = 'clear_cart' // 清空购物车
 
 export const RECEIVE_SEARCH_SHOPS = 'receive_search_shops' // 接收搜索的商家数组
+
+export const ADDGOODS_CHOOSE_ADDRESS = 'addgoods_choose_address' // 选择地址
+
+export const PO_ADDRESS = 'po_address' // 采购下单地址
+export const PO_SHOP = 'po_shop' // 采购下单商家信息以及商品
+

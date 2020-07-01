@@ -60,7 +60,7 @@
 		color: $uni-text-color-normal;
 	}
 	.alIcon{
-		font-size: 60upx;
+		font-size: 40upx;
 	}
 	.price{
 		color: $uni-text-orange;

@@ -1,6 +1,6 @@
 <template>
 	<view class="">
-		<view class="body plr pt pb" v-for="(item, index) in list" :key="index" @click="selectAdd">
+		<view class="body plr pt pb" v-for="(item, index) in list" :key="index" @click="selectAdd(item)">
 			<view class="flex baseline mt-sm">
 				<view class="title">{{ item.name }}</view>
 				<view class="right ml-sm">{{ item.phone }}</view>
@@ -23,17 +23,19 @@
 
 <script>
 // const Vuex = this.$store
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 export default {
 	data() {
 		return {
 			list: [
 				{ name: '王老吉', phone: '15183233274', startTime: '6:00', endTime: '18:00', address: '重庆市九龙坡区石桥铺万昌b111' },
 				{ name: '王老吉', phone: '15183233274', startTime: '6:00', endTime: '18:00', address: '重庆市九龙坡区石桥铺万昌b111' }
-			]
+			],
+			type:'',
 		};
 	},
-	onLoad() {
+	onLoad(options) {
+		this.type=options.type||''
 		this.getAddress;
 	},
 	computed: {
@@ -43,8 +45,13 @@ export default {
 	},
 	methods: {
 		...mapActions(['getAddress']),
-		selectAdd(){
-			console.log('选中')
+		...mapMutations(['addgoods_choose_address']),
+		selectAdd(val){
+			if(this.type==''){
+				return false
+			}
+			this.addgoods_choose_address(val)
+			uni.navigateBack()
 		},
 		addAddress(val,item) {		
 			uni.navigateTo({

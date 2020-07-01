@@ -7,15 +7,15 @@
 				<text @click="ok">确定</text>
 			</view>
 			<picker-view v-if="visible" :indicator-style="indicatorStyle" :value="value" @change="bindChange">
-				<!-- <picker-view-column>
+				<picker-view-column v-show="showYear">
 					<view class="item" v-for="(item,index) in years" :key="index">{{item}}年</view>
 				</picker-view-column>
-				<picker-view-column>
+				<picker-view-column v-show="showYear">
 					<view class="item" v-for="(item,index) in months" :key="index">{{item}}月</view>
 				</picker-view-column>
-				<picker-view-column>
+				<picker-view-column v-show="showYear">
 					<view class="item" v-for="(item,index) in days" :key="index">{{item}}日</view>
-				</picker-view-column> -->
+				</picker-view-column>
 				<picker-view-column>
 					<view class="item" v-for="(item,index) in hours" :key="index">{{item}}时</view>
 				</picker-view-column>
@@ -35,6 +35,10 @@
 			uniPopup
 		},
 		props: {
+			showYear:{
+				type:Boolean,
+				default:false
+			},
 			data: '',
 			start: '',
 			end: '',
@@ -138,15 +142,15 @@
 				this.$refs.popup.close()
 			},
 			ok() {
-				let day = this.day < 10 ? '0' + this.day : this.day,
-					month = this.month < 10 ? '0' + this.month : this.month,
-					hour = this.hour < 10 ? '0' + this.hour : this.hour,
-					min = this.min < 10 ? '0' + this.min : this.min
+				// let day = this.day < 10 ? '0' + this.day : this.day
+				// let	month = this.month < 10 ? '0' + this.month : this.month
+				let	hour = this.hour < 10 ? '0' + this.hour : this.hour
+				let	min = this.min < 10 ? '0' + this.min : this.min
 				let data =  hour + ':' + min;
 				this.$emit("rundata", data)
 				this.$refs.popup.close()
 			},
-			bindChange: function(e) {
+			bindChange(e) {
 				let val = e.detail.value
 				this.valueStr = JSON.stringify(val);
 				this.year = this.years[val[0]]
@@ -510,7 +514,7 @@
 	}
 
 	.but {
-		background: #fff;
+		background: $uni-color-orange;
 		height: 80rpx;
 		line-height: 80rpx;
 		padding: 0 30rpx;
@@ -519,11 +523,12 @@
 
 		text {
 			display: inline-block;
+			color: #FFFFFF;
 		}
 
 		text:last-child {
 			float: right;
-			color: $uni-color-primary;
+			// color: $uni-color-primary;
 		}
 	}
 
