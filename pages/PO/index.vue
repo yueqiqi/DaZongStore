@@ -1,8 +1,7 @@
 <!-- 采购下单 -->
 <template>
 	<view class="plr pt po">
-		<!-- v-if="!!address" -->
-		<view class="header" @click="chooseAdd">
+		<view class="header" v-if="!!POAddress" @click="chooseAdd">
 			<view class="flex flex-sp">
 				<view class="name">
 					收货人：
@@ -10,79 +9,138 @@
 				</view>
 				<view class="phone">{{ POAddress.phone }}</view>
 			</view>
-			<view class="flex flex flex-sp mt-xs mb-xs">
-				<view class="over">{{ POAddress.address }}</view>
+			<view class="flex flex flex-sp mt mb">
+				<view class="over">{{ POAddress.detailAddress }}</view>
 				<view class="alIcon">&#xe600;</view>
-			</view>
-			<view class="flex flex flex-sp mt-xs mb">
-				<view class="time">配送时间：</view>
-				<view class="right">{{ POAddress.time }}</view>
 			</view>
 			<view class="notice">
 				<text>注意：</text>
-				{{ POAddress.notice }}
+				{{goods.type == 1 ? '自提' : '配送'}}时间仅为预估时间,特殊需求请联系商家
 			</view>
 		</view>
-		<!-- <view v-else @click='chooseAdd' class="noAdd">暂未选择地址+</view> -->
+		<view v-else @click='chooseAdd' class="noAdd">暂未选择地址+</view>
 		<view class="body mt">
 			<view class="flex flex-sp">
 				<view class="merchant flex flex-center">
 					<view class="flex flex-center mr-sm" >
 						<image src="../../static/store.png" mode=""></image>
 					</view>
-					<view>{{ POShop.title }}</view>
+					<view>{{ goods.compName }}</view>
 				</view>
-				<view class="callphone" @click="callPhone(POShop.phone)">
+				<view class="callphone" @click="callPhone(goods.compPhone )">
 					<text class="alIcon">&#xe682;</text>
 					<text class="ml-xs">联系商家</text>
 				</view>
 			</view>
 			<view class="goods flex mt">
-				<view class="mr"><image class="uImg-l" :src="goods.img" mode=""></image></view>
+				<view class="mr"><image class="uImg-l" :src="goods.headUrl" mode=""></image></view>
 				<view>
-					<view class="title">{{goods.title}}</view>
-					<view>规格：{{goods.specification}}</view>
-					<view class="price">价格：<text>{{goods.price}}({{goods.type==1?'自提':'配送'}})</text></view>
-					<view>我的卖价：{{goods.sellingPrice}}</view>
+					<view class="title">{{goods.name}}</view>
+					<view>规格：{{goods.packSize||'散装称重' }}</view>
+					<view class="price">价格：<text>{{goods.price}}元/{{goods.unitName }}({{goods.type==1?'自提':'配送'}})</text></view>
+					<view v-if="goods.mySellPrice">我的卖价：{{goods.mySellPrice }}</view>
 				</view>
 			</view>
-			<view class="num mt-sm flex">购买数量：<input type="number" v-model="goodsNum" placeholder-style='font-size:20upx' placeholder="最少起批数量100"/><text class="ml">袋</text></view>
+			<view class="num mt-sm flex">购买数量：<input type="number" v-model="goodsNum" placeholder-style='font-size:20upx' :placeholder="'最少起批数量'+goods.wholesaleNum"/><text class="ml">袋</text></view>
+			<view class="flex mt">
+				<view class="title">{{ goods.type == 1 ? '自提' : '配送' }}时间:</view>
+				<view class="right ml">
+					<pickerTime @changeTime="changeTime" :sTime='0' :cTime='23'>
+						<span slot='pCon' class="mr-sm font-info" @click="selectTime('datetime')">{{ timer }}</span>
+					</pickerTime>
+				</view>
+			</view>
 			<view class="remarsk">
 				<view class="mt mb">订单留言</view>
 				<view class="area flex flex-center">
-					<textarea :value="textarea" placeholder="想对此次交易说点什么?" />
+					<textarea v-model="textarea" placeholder="想对此次交易说点什么?" />
 				</view>
 			</view>
 		</view>
 		<view class="footer flex flex-sp">
 			<view class="left">
 				<view>共计：<text>{{totalMoney}}</text>元</view>
-				<view class="num">{{goods.lucrative}}</view>
+				<view class="num">{{goods.profit}}</view>
 			</view>
-			<view class="right">下单支付</view>
+			<view class="right" @click="pay">下单支付</view>
 		</view>
 	</view>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex';
+import pickerTime from '@/components/select-time/picker2.vue';
 export default {
+	components: {
+		pickerTime
+	},
 	computed: {
-		...mapState(['POAddress','POShop']),
-		goods(){
-			return this.POShop.goods
-		},
+		...mapState(['POShop','goodsInfo','supplierAdd']),
 		totalMoney(){
 			return Number((this.goods.price)*(this.goodsNum)).toFixed(2)
+		},
+		POAddress:{//地址信息
+			get(){
+				return this.supplierAdd
+			},
+			set(val){}
 		},
 	},
 	data() {
 		return {
+			timer: '请选择时间',
+			goods:'',
 			goodsNum:'',//购买数量
 			textarea:'',//订单留言
 		};
 	},
+	onLoad(options) {
+		this.$api.echoGoodsInfo(options.id).then(res => {
+			this.goods=res
+		})
+		this.showAddress()
+	},
 	methods: {
+		...mapActions(['showAddress']),
+		...mapMutations(['order_pay']),
+		pay(){
+			console.log(this.POAddress)
+			if(Number(this.goodsNum)<Number(this.goods.wholesaleNum)){
+				uni.showToast({
+					title: '起批数量至少为'+this.goods.wholesaleNum, 
+					icon: "none",
+				})
+				this.goodsNum=''
+				return false
+			}
+			if(this.timer=='请选择时间'){
+				uni.showToast({
+					title: '请选择时间',
+					icon: "none",
+				})
+				return false
+			}
+			if(this.POAddress==''&&this.POAddress==null){
+				uni.showToast({
+					title: '请选择地址', 
+					icon: "none",
+				})
+				return false
+			}
+			let params = {
+				bulkGoodsId :this.goods.id,
+				num:this.goodsNum,
+				supplierAddressId :this.POAddress.id,
+				remark :this.textarea,
+				takeTime :this.timer
+			}
+			this.$api.placeOrder(params).then(res => {
+				this.order_pay(res)
+				uni.navigateTo({
+					url:'/pages/pay/index'
+				})
+			})
+		},
 		chooseAdd(){
 			uni.navigateTo({
 				url:'/pages/PO/address?type='+this.goods.type
@@ -92,7 +150,24 @@ export default {
 			uni.makePhoneCall({
 				phoneNumber:val
 			})
-		}
+		},
+		changeTime(val,val2){
+			let end = Number(val.split(' ')[1].split(':')[0]) + 1;
+			let ends = val.split(' ')[1].split(':')[1];
+			if (Number(end) > 23) {
+				end = 0;
+			}
+			if(Number(end)<10){
+				end = '0'+end
+			}
+			let ender = end + ':' + ends;
+			this.timer = val + '-' + ender;
+		},
+		selectTime(type) {
+			this.type = type;
+			this.showPicker = true;
+			this.value = this[type];
+		},
 	},
 };
 </script>
@@ -198,4 +273,5 @@ export default {
 		color: $uni-bg-color-white;
 	}
 }
+.font-info{color: #909090;}
 </style>

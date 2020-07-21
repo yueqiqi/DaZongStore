@@ -1,95 +1,122 @@
 <template>
 	<view class="bg">
-		<view class="bg-white plr header pt">
-			<view class="flex flex-sp">
+		<view class="bg-white plr header pt pb">
+			<view class="flex flex-sp line">
 				<view>订单号：{{ info.orderNo }}</view>
-				<view :style="{ color: info.payType == 1 ? 'rgb(64, 186, 73)' : 'rgb(0, 158, 242)' }">{{ info.payType == 1 ? '微信支付' : '支付宝支付' }}</view>
+				<view :style="{ color: info.payWay =='wxpay'?'rgb(64, 186, 73)':(info.payWay =='alipay'?'rgb(0, 158, 242)':'rgb(249,137,1)') }">{{info.type=='wxpay'?'微信支付':(info.payWay =='alipay'?'支付宝支付':'余额支付')}}</view>
 			</view>
-			<view>下单时间：{{ info.date }}</view>
-			<view>配送时间：{{ info.date }}</view>
-			<view class="flex flex-sp">
-				<view>收货人：{{ info.title }}</view>
-				<view @click="callPhone(info.phone)">
+			<view class="line">下单时间：{{ info.orderTime }}</view>
+			<view class="line">配送时间：{{ info.takeTime }}</view>
+			<view class="flex flex-sp line">
+				<view>收货人：{{ info.receiverName  }}</view>
+				<view @click="callPhone(info.receiverPhone)">
 					<text class="alIcon mr-sm">&#xe682;</text>
-					{{ info.phone }}
+					{{ info.receiverPhone }}
 				</view>
 			</view>
-			<view>收货地址：{{ info.address }}</view>
+			<view class="line">收货地址：{{ info.detailAddress }}</view>
 		</view>
-		<view class="body mt plr">
-			<view class="flex flex-sp border-bottom pb-sm pt-sm" v-if="orderType==1">
+		<view class="body mt plr bg-white pt pb">
+			<view class="flex flex-sp border-bottom pb-sm pt-sm" v-if="orderType == 'add'">
 				<view class="merchant flex flex-center">
 					<view class="flex flex-center mr-sm"><image src="../../static/store.png" mode=""></image></view>
-					<view>{{ goods.title }}</view>
+					<view>{{ info.sellerName }}</view>
 				</view>
-				<view class="callphone" @click="callPhone(goods.phone)">
+				<view class="callphone" @click="callPhone(info.sellerPhone)">
 					<text class="alIcon">&#xe682;</text>
 					<text class="ml-xs">联系商家</text>
 				</view>
 			</view>
 			<view class="flex mt">
-				<view><image class="uImg-l" :src="goods.img" mode=""></image></view>
+				<view><image class="uImg-l" :src="info.goodsImg" mode=""></image></view>
 				<view>
-					<view class="title ml">{{ info.title }}</view>
-					<view class="info ml">规格：{{ info.title || '--' }}</view>
+					<view class="title ml">{{ info.goodsName }}</view>
+					<view class="info ml">规格：{{ info.packSize || '散装称重' }}</view>
 					<view class="info ml">
 						价格：
 						<text class="spe">
-							{{ info.title }}
-							<text>({{ goods.type == 1 ? '自提' : '配送' }})</text>
+							{{ info.unitPrice }}元/{{info.unitName}}
+							<text>({{ info.type == 1 ? '自提' : '配送' }})</text>
 						</text>
 					</view>
 					<view class="info ml">购买数量：{{ info.num }}</view>
 				</view>
 			</view>
-			<view class="remarks mt">订单留言：{{ goods.remarks }}</view>
+			<view class="remarks mt">订单留言：{{ info.remark }}</view>
 			<view class="remarks mt">
 				订单金额：
-				<text class="money">{{ goods.money }}</text>
+				<text class="money">{{ info.totalPrice }}</text>
 				元
 			</view>
-			<view class="remarks mt" v-if="orderType==1">
+			<view class="remarks mt" v-if="orderType == 'add'">
 				实付金额：
-				<text class="money">{{ goods.money }}</text>
+				<text class="money">{{ info.actualPrice }}</text>
 				元
 			</view>
 		</view>
-		<view class="footer">
-			<button class="btn">{{ orderType == 1 ? '确认收货' : '备货完成' }}</button>
+		<view class="footer" v-if="showBtn">
+			<button class="btn" @click="confirm">{{ orderType == 'add' ? '确认收货' : '备货完成' }}</button>
 		</view>
 	</view>
 </template>
 
 <script>
-import utils from '@/static/utils.js';
 export default {
 	data() {
 		return {
 			orderType: null, //1--采购订单,2--销售订单
-			info: utils.list[0],
-			goods: {
-				status: 2,
-				date: '2020-05-26 10:14:21',
-				phone: 15183233274,
-				title: '商品名字',
-				orderNo: '12345678998765444',
-				img: require('@/static/logo.png'),
-				title: '商品名字2',
-				store: '四级生鲜',
-				price: '55',
-				type: '2',
-				specification: '1*30斤/袋',
-				num: '100',
-				address: '大龙山街道艾迪斯',
-				sellingPrice: '60.9元/袋',
-				lucrative: '该价格最小批发量预计可获利890元'
-			}
+			info: '',
+			orderNo: '',
+			
 		};
+	},
+	computed: {
+		showBtn() {
+			let isBool = false
+			if(this.orderType == 'add'&&this.info.status==2){
+				isBool = true
+			}
+			if(this.orderType != 'add'&&this.info.status==1){
+				isBool= true
+			}
+			return isBool
+		}
 	},
 	onLoad(options) {
 		this.orderType = options.orderType;
+		this.orderNo = options.orderNo;
+		this.getOrderInfo(options.orderNo)
 	},
 	methods: {
+		getOrderInfo(orderNo) {
+			this.$api.getOrderInfo(orderNo).then(res => {
+				this.info = res;
+			});
+		},
+		confirm() {
+			let that = this;
+			uni.showModal({
+				title: '收货提示',
+				content: '是否确认' + this.orderType == 'add' ? '收货' : '备货' + '?确认后订单状态将改变!',
+				success(res) {
+					if (res.confirm) {
+						if (that.orderType == 'add') {
+							//采购订单
+							that.$api.orderReceive(that.info.orderNo).then(res => {
+								uni.navigateBack({});
+							});
+						} else {
+							//销售订单
+							that.$api.orderPrepare(that.info.orderNo).then(res => {
+								uni.navigateBack({});
+							});
+						}
+					} else {
+						console.log(2);
+					}
+				}
+			});
+		},
 		callPhone(val) {
 			uni.makePhoneCall({
 				phoneNumber: val
@@ -98,9 +125,8 @@ export default {
 	}
 };
 </script>
-<style scoped>
-page,
-.bg {
+<style scoped lang="scss">
+page ,.bg{
 	background: $uni-bg-color !important;
 }
 </style>
@@ -113,8 +139,8 @@ page,
 	color: $uni-color-title;
 }
 .body {
-	.border-bottom{
-		border-bottom:1upx dashed $uni-border-color
+	.border-bottom {
+		border-bottom: 1upx dashed $uni-border-color;
 	}
 	.merchant {
 		color: $uni-text-orange;
@@ -124,7 +150,7 @@ page,
 			height: $uni-img-size-sm;
 		}
 	}
-	.callphone{
+	.callphone {
 		font-size: $uni-font-size-base;
 	}
 	.remarks {
@@ -149,14 +175,17 @@ page,
 		color: $uni-text-orange;
 	}
 }
-.footer{
+.footer {
 	position: fixed;
 	left: 0;
 	right: 0;
 	bottom: 50upx;
-	button{
+	button {
 		width: 70%;
 		border-radius: $uni-border-radius-xxl;
 	}
+}
+.line{
+	line-height: 60upx;
 }
 </style>

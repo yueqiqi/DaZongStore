@@ -2,10 +2,10 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
-			// uni.setStorageSync('userToken',res.token,);
 		},
 		onShow: function() {
 			console.log('App Show')
+			uni.setStorageSync('userToken','323a58a3-e46c-4365-857b-c5fbe7d67d1c');
 		},
 		onHide: function() {
 			console.log('App Hide')
@@ -14,6 +14,13 @@
 </script>
 
 <style lang="scss">
+	.stick {
+		/* #ifndef APP-PLUS-NVUE */
+		position: -webkit-sticky;
+		/* #endif */
+		position: sticky;
+		top: var(--window-top);
+	}
 	.bg-white{
 		background: $uni-bg-color-white;
 	}

@@ -1,51 +1,67 @@
 <!-- 采购订单列表 -->
 <template>
 	<view>
+		<view class="stick">	
 		<tabs :list="tabList" @changeTab='changeTab'></tabs>
+		</view>
 		<view v-for="(item,index) in list" :key='index'>
 			<view class="card plr pb pt mb-sm">
 				<view class="header flex center border-bottom">
 					<view class='img'><image src="@/static/store.png" mode=""></image></view>
-					<view class="ml">{{item.title}}</view>
+					<view class="ml">{{item.sellerName  }}</view>
 				</view>
 				<view class="footer">
 					<view class="flex flex-sp mt-xs mb-xs">
 						<view class="orderNo">订单号:{{item.orderNo}}</view>
-						<view :style="{color:item.type==1?'rgb(64, 186, 73)':'rgb(0, 158, 242)'}">{{item.type==1?'微信支付':'支付宝支付'}}</view>
+						<view :style="{color:item.payWay =='wxpay'?'rgb(64, 186, 73)':(item.payWay =='alipay'?'rgb(0, 158, 242)':'rgb(249,137,1)')}">{{item.type=='wxpay'?'微信支付':(item.payWay =='alipay'?'支付宝支付':'余额支付')}}</view>
 					</view>
-					<view class="flex flex-sp" v-for="(items,index) in item.list">
-						<view >{{items.name}}</view>
+					<view class="flex flex-sp">
+						<view>{{item.goodsName}}</view>
 						<view>x{{item.num}}</view>
 					</view>
 					<view class="flex flex-sp mt-sm mb-xs">
-						<view >{{item.date}}</view>
+						<view >{{item.orderTime}}</view>
 					</view>
 					<view class="flex flex-sp center">
-						<view >合计：<text style="color: #ff0000;">{{item.price}}</text> </view>
+						<view >合计：<text style="color: #ff0000;">¥{{item.totalPrice }}元</text> </view>
 						<view class="flex btns">
-							<view class="btn-info" @click="goInfo(item)">订单详情</view>
-							<view v-if="item.status==2" class="btn-confirm ml-xs" @click="confirm(item)">确认收货</view>
+							<view class="btn-info" @click="goInfo(item.orderNo)">订单详情</view>
+							<view v-if="(title == 'add'&&item.status==2)||(title != 'add'&&item.status==1)" class="btn-confirm ml-xs" @click="confirm(item,index)">{{title=='add'?'确认收货':'备货完成'}}</view>
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
+		<loadMore :loadingType="loadingType" :contentText="contentText" :isShowLoad='isShowLoad'></loadMore>
 	</view>
 </template>
 
 <script>
 	import tabs from '@/components/listTabs/index.vue'
 	import utils from '@/static/utils.js'
+	import loadMore from '@/components/load-more/index.vue';
 	export default {
 		components: {
-			tabs
+			tabs,
+			loadMore
 		},
 		data() {
 			return {
+				cur:1,
 				tabList:['待发货','待收货','完成'],
 				flag:[false,false,false],
-				list:utils.list,
+				list:[],
 				title:'',
+				
+				page:1,
+				loadingText: '加载中...',
+				loadingType: 0, //定义加载方式 0---contentdown  1---contentrefresh 2---contentnomore
+				contentText: {
+					contentdown: '上拉显示更多',
+					contentrefresh: '正在加载...',
+					contentnomore: '没有更多数据了'
+				},
+				isShowLoad:false,//显示加载更多
 			};
 		},
 		onShow(){
@@ -59,14 +75,38 @@
 				title: title
 			});
 		},
+		onLoad(options) {
+			// this.title=options.title
+			this.title='add'
+			
+			this.getList()
+		},
 		methods: {
-			confirm(val){
+			getList(){
+				let params = {
+					status: this.cur,//订单状态 已支付:1 已备货:2 已收货:3
+					type:this.title == 'add'?1:2,//订单类型 采购订单:1 销售订单:2
+				}
+				this.$api.getOrderList(params,1).then(res => {
+						this.list=res.items
+				})
+			},
+			confirm(val,index){
+				let that = this 
 				uni.showModal({
 					title:'收货提示',
-					content:'是否确认收货?确认收货订单状态将改变!',
+					content:'是否确认'+this.title=='add'?'收货':'备货'+'?确认后订单状态将改变!',
 					success(res) {
 						if(res.confirm){
-							console.log(1)
+							if(that.title=='add'){//采购订单
+								that.$api.orderReceive(val.orderNo).then(res => {
+									that.list.splice(index,1)
+								})
+							}else{//销售订单
+								that.$api.orderPrepare(val.orderNo).then(res => {
+									that.list.splice(index,1)
+								})
+							}
 						}else{
 							console.log(2)
 						}
@@ -74,12 +114,41 @@
 				})
 			},
 			goInfo(val){
-				console.log(val)
+				uni.navigateTo({
+					url:'/pages/list/info?orderNo='+val+'&orderType='+this.title
+				})
 			},
 			changeTab(index) {
-				console.log(index)
+				this.cur = Number(index)+1
+				this.getList()
 			}
 		},
+		async	onReachBottom(){
+				this.isShowLoad=true
+				this.page++; //每触底一次 page +1
+				let _self = this;
+				if (this.loadingType != 0) {
+					//loadingType!=0;直接返回
+					return false;
+				}
+				this.loadingType = 1;
+				uni.showNavigationBarLoading(); //显示加载动画
+				let params = {
+					status: _self.cur,//订单状态 已支付:1 已备货:2 已收货:3
+					type:_self.title == 'add'?1:2,//订单类型 采购订单:1 销售订单:2
+				}
+				let data = await _self.$api.getOrderList(params,_self.page)
+				this.isShowLoad=false
+				if (data.items == '') {
+					//没有数据
+					_self.loadingType = 2;
+					uni.hideNavigationBarLoading(); //关闭加载动画
+					return;
+				}
+				_self.list = _self.list.concat(data.items); //将数据拼接在一起
+				_self.loadingType = 0; //将loadingType归0重置
+				uni.hideNavigationBarLoading(); //关闭加载动画	
+			},
 	}
 </script>
 

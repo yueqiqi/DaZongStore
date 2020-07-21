@@ -15,16 +15,16 @@
 		</view>
 		<view class="flex border-bottom">
 			<view class="title">{{ addressType == 1 ? '自提' : '详细' }}地址:</view>
-			<view class="right ml"><input :disabled="addressType == 1" type="text" placeholder-class="myIp" placeholder="请输入详细地址" v-model="address" /></view>
+			<view class="right ml"><input :disabled="addressType == 1&&supplierAdd!=null" type="text" placeholder-class="myIp" placeholder="请输入详细地址" v-model="address" /></view>
 		</view>
-		<view class="flex border-bottom">
+		<!-- <view class="flex border-bottom">
 			<view class="title">{{ addressType == 1 ? '自提' : '配送' }}时间:</view>
 			<view class="right ml">
 				<pickerTime @changeTime="changeTime" :sTime='0' :cTime='23'>
 					<span slot='pCon' class="mr-sm" @click="selectTime('datetime')">{{ timer }}</span>
 				</pickerTime>
 			</view>
-		</view>
+		</view> -->
 		<view class="footer flex-center flex"><button class="btn" @click="save">保存</button></view>
 		<pickerAddress v-model="addressShow" @confirm="addresspick" />
 		<!-- <pickerTime :show="showPicker" :type="type" :value="value" :show-tips="false" @confirm="onSelected" @cancel="showPicker = false"></pickerTime> -->
@@ -40,6 +40,9 @@ export default {
 	components: {
 		pickerAddress,
 		pickerTime
+	},
+	computed: {
+		...mapState(['supplierAdd']),
 	},
 	data() {
 		return {
@@ -59,9 +62,8 @@ export default {
 		};
 	},
 	methods: {
-		...mapMutations(['po_address']),
+		...mapActions(['myaddress','showAddress']),
 		testInput(){
-			console.log(this.name,this.phone,this)
 			if(this.name==''){
 				uni.showToast({
 					title: "请填写姓名",
@@ -77,7 +79,6 @@ export default {
 				return false
 			}else{
 				let isBool = this.$utils.testPhone(this.phone)
-				console.log(isBool)
 				if(!isBool){
 					this.phone=''
 				}
@@ -101,26 +102,30 @@ export default {
 					return false
 				}
 			}
-			if(this.timer==''){
-				uni.showToast({
-					title: "请填写时间",
-					icon: "none"
-				});
-				return false
-			}
 		},
 		save(){//保存
 		let address
 		this.addressType!=1?address=this.province+this.city+this.area+this.address:address=''
-		let params = {
-			name:this.name,
-			phone:this.phone,
-			address:address,
-			time:this.timer,
-			notice:'配送时间为预估时间'
+		let params={}
+		if(this.addressType==1){//自提
+			 params = {
+				detailAddress :this.address,//详细地址
+				name:this.name,
+				phone:this.phone,
+				type:3,
+			}
+		}else{
+			params={
+				detailAddress :this.address,//详细地址
+				name:this.name,
+				phone:this.phone,
+				type:3,
+				provinceRegion :address,
+			}
 		}
 			this.testInput()
-			this.po_address(params)
+			this.myaddress(params)
+			this.showAddress()
 			uni.navigateBack()
 		},
 		changeTime(val,val2){
@@ -170,6 +175,12 @@ export default {
 	},
 	onLoad(option) {
 		this.addressType = option.type;
+		if(this.supplierAdd!=null&&this.supplierAdd!=''){
+			this.name=this.supplierAdd.name
+			this.phone=this.supplierAdd.phone
+			this.address=this.supplierAdd.detailAddress
+			this.province=this.supplierAdd.detailAddress
+		}
 	},
 	onShow() {
 		let title;

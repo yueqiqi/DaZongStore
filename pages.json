@@ -3,7 +3,10 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "采购商城首页"
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				}
 			}
 		}
 	    ,{
@@ -25,19 +28,28 @@
         ,{
             "path" : "pages/search/index",
             "style" : {
-							"navigationBarTitleText": "采购商品搜索"
+							"navigationStyle": "custom",
+							"app-plus": {
+								"titleNView": false
+							}
 						}
         }
         ,{
             "path" : "pages/searchGoods/index",
             "style" : {
-							"navigationBarTitleText": "搜索上架商品"
+							"navigationStyle": "custom",
+							"app-plus": {
+								"titleNView": false
+							}
 						}
         }
         ,{
             "path" : "pages/searchGoods/list",
             "style" : {
-							"navigationBarTitleText": "上架商品列表"
+							"navigationStyle": "custom",
+							"app-plus": {
+								"titleNView": false
+							}
 						}
         }
         ,{
@@ -78,7 +90,7 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "大宗商城",
-		"navigationBarBackgroundColor": "#f37b1d",
+		"navigationBarBackgroundColor": "#F98901",
 		"backgroundColor": "#F8F8F8"
 	}
 }

@@ -1,17 +1,17 @@
 <template>
-	<view>
-		<view class="mask" @click="close" :class="isShow ? 'show' : 'hide'"></view>
+	<view class="stick" style="z-index: 998;">
+		
 		<view class="navTabBox border-bottom">
 			<view class="longTab" :style="{ background: bgColor }">
 				<scroll-view scroll-x="true" style="white-space: nowrap; display: flex" scroll-with-animation :scroll-left="tabLeft">
 					<view
-						class="longItem"
+						class="longItem over"
 						:style="{ width: isWidth + 'px', color: index === tabClick ? clickItem : normal }"
 						:data-index="index"
 						v-for="(item, index) in tabTitle"
 						:key="index"
 						:id="'id' + index"
-						@click="longClick(index)"
+						@click="longClick(index,item.id)"
 					>
 						{{ item[titleKey] }}
 					</view>
@@ -22,9 +22,10 @@
 		</view>
 		<view class="outBox" :class="isShow == true ? 'show' : 'hide'">
 			<view class="animate" v-for="(item, index) in tabTitle" :key="index">
-				<view class="titleKey" :class="index === tabClick ? 'animateItem' : 'animateNormal'" @click="longClick(index)">{{ item[titleKey] }}</view>
+				<view class="titleKey" :class="index === tabClick ? 'animateItem' : 'animateNormal'" @click="longClick(index,item.id)">{{ item[titleKey] }}</view>
 			</view>
 		</view>
+		<view class="mask" @click="close" :class="isShow ? 'show' : 'hide'"></view>
 	</view>
 </template>
 
@@ -55,12 +56,12 @@ export default {
 		titleKey: {
 			//选项卡映射的键
 			type: String,
-			default: 'title'
+			default: 'name'
 		},
 		clickItem: {
 			//选中时的样式
 			type: String,
-			default: '#f37b1d'
+			default: '#F98901'
 		},
 		normal: {
 			//正常样式
@@ -91,8 +92,9 @@ export default {
 			this.isLeft = newValue * this.isWidth; //设置下划线位置
 		}
 	},
-	created() {
+	updated() {
 		var that = this;
+		if(that.tabTitle.length==0)return
 		// 获取设备宽度
 		uni.getSystemInfo({
 			success(e) {
@@ -112,8 +114,8 @@ export default {
 			this.isShow = !this.isShow;
 		},
 		// 导航栏点击
-		longClick(index) {
-			this.$emit('changeTab', index); //设置swiper的第几页
+		longClick(index,id) {
+			this.$emit('changeTab', index,id); //设置swiper的第几页
 			this.isShow=false
 		},
 	}
@@ -164,6 +166,8 @@ export default {
 	align-items: center;
 	background: #fff;
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+	position:relative;
+	z-index: 99999;
 	&.hide {
 		display: none;
 		transform: translate(0px, -200px);
@@ -175,6 +179,7 @@ export default {
 		transform: translate(0px, 0px);
 		transition: -webkit-transform 300ms linear 0ms, transform 300ms linear 0ms;
 		transform-origin: 50% 50% 0px;
+		z-index: 99999;
 	}
 	.animate {
 		.titleKey {
@@ -192,8 +197,10 @@ export default {
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0);
 	transition: background-color 0.15s linear;
+	z-index: 8;
 	&.show {
 		background-color: rgba(0, 0, 0, 0.5);
+		
 	}
 	&.hide {
 		display: none;
@@ -208,6 +215,6 @@ export default {
 .animateItem {
 	//下拉选择选中样式
 	background: #fff;
-	color: #f37b1d;
+	color: #F98901;
 }
 </style>

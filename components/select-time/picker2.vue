@@ -117,7 +117,7 @@ export default {
 			for (let i = +this.sDayNum; i <= parseInt(this.sDayNum) + parseInt(this.dayNum); i++) {
 				let date1 = new Date(date);
 				date1.setDate(date.getDate() + i);
-				let md = date1.getFullYear() + '-' + this.timeFormat(date1.getMonth() + 1) + '-' + this.timeFormat(date1.getDate());
+				let md = date1.getFullYear() + '/' + this.timeFormat(date1.getMonth() + 1) + '/' + this.timeFormat(date1.getDate());
 				monthDay.push(md);
 			}
 

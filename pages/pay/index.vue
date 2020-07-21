@@ -8,11 +8,11 @@
 			</view>
 			<view class="flex flex-sp border-bottom pb-sm pt">
 				<view>订单时间</view>
-				<view class="right">{{ order.date }}</view>
+				<view class="right">{{ order.orderTime }}</view>
 			</view>
 			<view class="flex flex-sp border-bottom pb-sm pt">
 				<view>订单金额</view>
-				<view class="right">{{ order.price }}元</view>
+				<view class="right">{{ order.totalPrice }}元</view>
 			</view>
 		</view>
 		<view class="body">
@@ -23,7 +23,7 @@
 						<view><image class="img mr-sm" :src="item.img" mode="widthFix"></image></view>
 						<view class="text">
 							{{ item.payType }}
-							<text class="balance ml-xs" v-if="item.val == 'balance'">(可用余额：¥{{ balance.toFixed(2) }})</text>
+							<text class="balance ml-xs" v-if="item.val == 'balance'">(可用余额：¥{{ balance }})</text>
 						</view>
 					</view>
 					<view>
@@ -36,7 +36,7 @@
 			<view class="left flex center">
 				<view>
 					应付：
-					<text>{{ order.price }}元</text>
+					<text>{{ order.actualPrice  }}元</text>
 				</view>
 			</view>
 			<view class="right" @click="pay">立即支付</view>
@@ -46,25 +46,44 @@
 
 <script>
 import utils from '@/static/utils.js';
+import {mapState, mapMutations } from 'vuex';
 export default {
 	data() {
 		return {
-			balance: 3500,
-			order: utils.list[0],
-			checked: 'wechat',
+			checked: 'wxpay',
 			radios: [
-				{ img: require('@/static/wechat.png'), payType: '微信支付', val: 'wechat', color: 'rgb(0, 204, 0)' },
+				{ img: require('@/static/wechat.png'), payType: '微信支付', val: 'wxpay', color: 'rgb(0, 204, 0)' },
 				{ img: require('@/static/ali.png'), payType: '支付宝支付', val: 'alipay', color: 'rgb(75, 159, 254)' },
-				{ img: require('@/static/yue.png'), payType: '余额支付', val: 'balance', color: '#f37b1d' }
+				{ img: require('@/static/yue.png'), payType: '余额支付', val: 'balance', color: '#F98901' }
 			]
 		};
+	},
+	computed: {
+		...mapState({
+			order:state=>state.orderInfo,
+			balance:state=>state.orderInfo.availableBalance
+		})
 	},
 	methods: {
 		radioChange(val) {
 			this.checked = val;
 		},
 		pay() {
-			console.log('立即支付');
+			if(this.checked=='balance'){
+				this.$api.balanceOrder(this.order.orderNo).then(res => {
+					uni.redirectTo({
+						url:'/pages/list/index?title=add'
+					})
+				})
+			}else{
+				let params ={
+					orderNo :this.order.orderNo,
+					payWay :this.checked
+				} 
+				this.$api.thPartyPay(params).then(res => {
+					
+				})
+			}
 		}
 	}
 };

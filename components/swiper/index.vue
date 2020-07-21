@@ -2,7 +2,8 @@
 	<view>
 		<!-- @touchstart="refreshStart" @touchmove="refreshMove" @touchend="refreshEnd" -->
 		<refresh ref="refresh" @isRefresh="isRefresh"></refresh>
-		<swiper
+		<!-- <button @click="look">查看</button> -->
+		<!-- <swiper
 			:current="TabCur"
 			class="swiper"
 			duration="300"
@@ -11,61 +12,58 @@
 			@change="swiperChange"
 			:style="{ height: swiperHeight + 'px' }"
 		>
-			<swiper-item v-for="(val, index) in tabList" :key="index">
-				<scroll-view
-					scroll-y="true"
-					upper-threshold="10"
-					refresher-background="#f1f1f1"
-					:refresher-threshold="60"
-					refresher-enabled="true"
-					:refresher-triggered="triggered"
-					:enable-back-to-top="true"
-					:scroll-with-animation="true"
-					refresher-default-style="none"
-					@scrolltoupper="refreshStart"
-					@refresherpulling="refreshMove"
-					@touchend="refreshEnd"
-				>
-					<view class="list">
-						<scroll-view scroll-y="true">
-							<view class="flex categoryList">
-								<view class="left-categoryList">
-									<scroll-view scroll-y="true" :style="{ height: swiperHeight + 'px' }">
-										<block v-for="(leftCategoryList, left_index) in details.leftCategoryList" :key="left_index">
-											<view @click="leftClick(left_index)" class="left-title" :class="left_index === leftIndex ? 'click-left' : ''">{{ leftCategoryList.title }}</view>
-										</block>
-									</scroll-view>
-								</view>
-								<view class="right-categoryList pt">
-									<scroll-view scroll-y="true" :style="{ height: swiperHeight + 'px' }">
-										<block v-for="(rightCategoryList, right_index) in details.rightCategoryList" :key="right_index">
-											<view class="card-list mb border-bottom pb">
-												<view class="card-header flex flex-sp center plr" @click="openCategoryList(rightCategoryList, right_index)">
-													<view class="flex center">
-														<view class="uImg mr-sm"><image style="width: 100%;height: 100%;" :src="rightCategoryList.img" mode=""></image></view>
-														<view>
-															{{ rightCategoryList.title }}
-															<text class="type ml-xs">({{ rightCategoryList.list.length + '种' }})</text>
-														</view>
-													</view>
-													<view class="open">
-														{{ rightCategoryList.type ? '关闭' : '展开' }}
-														<text class="alIcon">&#xe600;</text>
-													</view>
-												</view>
-												<view class="card-body" v-if="rightCategoryList.type">
-													<card :list="rightCategoryList.list" @addClick="add"></card>
+			<swiper-item v-for="(val, index) in tabList" :key="index"> -->
+		<scroll-view scroll-y="true">
+			<view class="list">
+				<scroll-view scroll-y="true">
+					<view class="flex categoryList">
+						<view class="left-categoryList">
+							<scroll-view scroll-y="true" :style="{ height: swiperHeight + 'px' }">
+								<block v-for="(val, left_index) in leftCategoryList" :key="left_index">
+									<view @click="leftClick(left_index, val.id)" class="left-title" :class="left_index === leftIndex ? 'click-left' : ''">{{ val.name }}</view>
+								</block>
+							</scroll-view>
+						</view>
+						<view class="right-categoryList pt">
+							<!-- upper-threshold="10"
+							refresher-background="#f1f1f1"
+							:refresher-threshold="60"
+							refresher-enabled="true"
+							:refresher-triggered="triggered"
+							:enable-back-to-top="true"
+							:scroll-with-animation="true"
+							refresher-default-style="none"						
+							@scrolltoupper="refreshStart"
+							@refresherpulling="refreshMove"
+							@touchend="refreshEnd"
+							 lower-threshold='1' -->
+							<scroll-view scroll-y="true" :style="{ height: swiperHeight + 'px' }" @scrolltolower="refend">
+								<block v-for="(rightCategoryList, right_index) in rightCategoryLists" :key="right_index">
+									<view class="card-list mb border-bottom pb">
+										<view class="card-header flex flex-sp center plr" @click="openCategoryList(rightCategoryList, right_index)">
+											<view class="flex center" style="width: 80%;">
+												<view class="uImg mr-sm "><image style="width: 100%;height: 100%;" :src="rightCategoryList.smallUrl" mode=""></image></view>
+												<view style="font-size: 28upx;flex: auto;" class="over">
+													{{ rightCategoryList.name }}
+													<text class="type ml-xs">({{ rightCategoryList.num + '种' }})</text>
 												</view>
 											</view>
-										</block>
-									</scroll-view>
-								</view>
-							</view>
-						</scroll-view>
+											<view style="width: 20%" class="open">
+												{{ rightCategoryList.type ? '关闭' : '展开' }}
+												<text class="alIcon">&#xe600;</text>
+											</view>
+										</view>
+										<view class="card-body" v-if="rightCategoryList.type"><card :list="endList" @addClick="add"></card></view>
+									</view>
+								</block>
+							</scroll-view>
+						</view>
 					</view>
 				</scroll-view>
-			</swiper-item>
-		</swiper>
+			</view>
+		</scroll-view>
+		<!-- </swiper-item>
+		</swiper> -->
 	</view>
 </template>
 
@@ -78,11 +76,15 @@ export default {
 		card
 	},
 	props: {
+		parent_id: {},
+		leftCategoryList: {
+			type: Array,
+			default: () => {
+				return [];
+			}
+		},
 		tabList: {
 			type: Array
-		},
-		details: {
-			type: Object
 		},
 		TabCur: {
 			type: Number,
@@ -91,10 +93,22 @@ export default {
 	},
 	data() {
 		return {
+			rightTrue: true,
+			rightPage: 1,
+			rightId: '',
+			endList: [],
+			rightCategoryLists: [],
 			leftIndex: 0,
 			triggered: false,
 			swiperHeight: 0 //外部的高度
 		};
+	},
+	watch: {
+		leftCategoryList(newValue, oldValue) {
+			if (newValue.length > 0) {
+				this.leftClick(0, newValue[0].id);
+			}
+		}
 	},
 	created() {
 		let _this = this;
@@ -104,22 +118,61 @@ export default {
 		}, 10);
 	},
 	methods: {
-		add(val){
-			console.log(1,val)
+		refend(val) {
+			if (!this.rightTrue) return;
+			this.rightPage += 1;
+			let params = {
+				id: this.rightId,
+				page: this.rightPage
+			};
+			this.$api.getList2(params).then(res => {
+				res.items.map(val => {
+					val.type = false;
+				});
+				if (res.items != '') {
+					this.rightCategoryLists = this.rightCategoryLists.concat(res.items);
+				} else {
+					uni.showToast({
+						title: '暂无更多数据',
+						icon: 'none'
+					});
+					this.rightTrue = false;
+				}
+			});
+		},
+		add(val) {
+			this.$store.commit('add_goodsinfo',val)
+			uni.navigateTo({
+				url:'/pages/PO/index?id='+val.id
+			})
 		},
 		openCategoryList(item, idx) {
-			this.details.rightCategoryList.map((val,ix) => {
-				if(idx!=ix){
-					val.type=false
+			this.rightCategoryLists.map((val, ix) => {
+				if (idx != ix) {
+					val.type = false;
 				}
-			})
-			this.$emit('update:details',this.details)
+			});
 			//右侧点击展开
 			item.type = !item.type;
+			this.$api.getList3(item.id).then(res => {
+				this.endList = res;
+				// console.log(this.endList.length)
+			});
 		},
-		leftClick(index) {
+		leftClick(index, id) {
+			this.rightId = id;
 			//左侧列表点击
 			this.leftIndex = index;
+			let params = {
+				id,
+				page: 1
+			};
+			this.$api.getList2(params).then(res => {
+				res.items.map(val => {
+					val.type = false;
+				});
+				this.rightCategoryLists = res.items;
+			});
 		},
 
 		refreshStart(e) {

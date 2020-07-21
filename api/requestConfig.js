@@ -1,6 +1,6 @@
 import request from "./request";
-// let baseUrl = "http://192.168.0.107:10010";
-let baseUrl = "https://takeout.lbh360.com";
+let baseUrl = "http://192.168.0.107:10010/";
+// let baseUrl = "https://takeout.lbh360.com";
 //可以new多个request来支持多个域名请求
 let $http = new request({
 	//接口请求地址
@@ -101,8 +101,8 @@ $http.dataFactory = function (res) {
 				loginPopupNum++;
 				uni.showModal({
 					title: '温馨提示',
-					content: '您暂未绑定手机号,需要绑定手机号后才能获得更多权限哟~',
-					confirmText: "去绑定",
+					content: '登陆已过期请重新登陆~',
+					confirmText: "去登陆",
 					// cancelText: "再逛会",
 					success: res2 => {
 						loginPopupNum--;
