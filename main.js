@@ -8,7 +8,8 @@ Vue.prototype.$store = store
 Vue.prototype.$utils = utils
 Vue.prototype.$api = api
 Vue.config.productionTip = false
-
+// import uView from "uview-ui";
+// Vue.use(uView);
 App.mpType = 'app'
 
 const app = new Vue({

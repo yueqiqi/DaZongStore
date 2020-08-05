@@ -9,7 +9,7 @@
 						</view>
 						<view class="right ml">
 							<view class="font">{{item.name  }}</view>
-							<view>供应商：{{item.compName }}</view>
+							<view class="over" style="width: 450upx;">供应商：{{item.compName }}</view>
 							<view >规格：{{item.packSize||'散装称重' }}</view>
 							<view>价格： <text class='price'>{{item.price}}元/{{item.unitName }} <text >({{item.type==1?'自提':'配送'}})</text> </text></view>
 							<view>起批数量：{{item.wholesaleNum }}{{item.unitName }}</view>

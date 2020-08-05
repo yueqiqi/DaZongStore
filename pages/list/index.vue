@@ -2,18 +2,24 @@
 <template>
 	<view>
 		<view class="stick">	
-		<tabs :list="tabList" @changeTab='changeTab'></tabs>
+		<tabs ref='tabs2' :list="tabList" @changeTab='changeTab'></tabs>
 		</view>
-		<view v-for="(item,index) in list" :key='index'>
+		<view class="no-order" v-if="list==''">
+			<view class="info">
+				<view><image src="../../static/noOrder.png" mode=""></image></view>
+				<view>暂无订单记录</view>
+			</view>
+		</view>
+		<view v-for="(item,index) in list" :key='index' v-else>
 			<view class="card plr pb pt mb-sm">
 				<view class="header flex center border-bottom">
 					<view class='img'><image src="@/static/store.png" mode=""></image></view>
-					<view class="ml">{{item.sellerName  }}</view>
+					<view class="ml">{{title == 'add' ?item.sellerName : item.buyerName }}</view>
 				</view>
 				<view class="footer">
 					<view class="flex flex-sp mt-xs mb-xs">
 						<view class="orderNo">订单号:{{item.orderNo}}</view>
-						<view :style="{color:item.payWay =='wxpay'?'rgb(64, 186, 73)':(item.payWay =='alipay'?'rgb(0, 158, 242)':'rgb(249,137,1)')}">{{item.type=='wxpay'?'微信支付':(item.payWay =='alipay'?'支付宝支付':'余额支付')}}</view>
+						<view :style="{color:item.payWay =='wxpay'?'rgb(64, 186, 73)':(item.payWay =='alipay'?'rgb(0, 158, 242)':'rgb(249,137,1)')}">{{item.payWay=='wxpay'?'微信支付':(item.payWay =='alipay'?'支付宝支付':'余额支付')}}</view>
 					</view>
 					<view class="flex flex-sp">
 						<view>{{item.goodsName}}</view>
@@ -48,6 +54,7 @@
 		data() {
 			return {
 				cur:1,
+				currentTab:null,//其他链接跳转
 				tabList:['待发货','待收货','完成'],
 				flag:[false,false,false],
 				list:[],
@@ -62,32 +69,45 @@
 					contentnomore: '没有更多数据了'
 				},
 				isShowLoad:false,//显示加载更多
+				isFromAndroid:false,//是否从安卓过来
 			};
 		},
 		onShow(){
 			let title;
 			if (this.title == 'add') {
-				title = '采购订单列表';
+				title = '采购订单';
 			} else {
-				title = '销售订单列表';
+				title = '销售订单';
 			}
 			uni.setNavigationBarTitle({
 				title: title
 			});
 		},
-		onLoad(options) {
-			// this.title=options.title
-			this.title='add'
-			
-			this.getList()
+	async	onLoad(options) {
+			if(!!options.token){
+				uni.setStorageSync('userToken',options.token);
+				this.isFromAndroid = true
+			}
+			if(!!options.currentTab){
+			setTimeout(()=>{
+					this.$refs.tabs2.longClick(options.currentTab)
+				},100)
+			}
+			this.title=options.title
+			await	this.getList()
+		},
+		onUnload() {
+			if(this.isFromAndroid){
+				window.android.androidMethod('toBack','')
+			}
 		},
 		methods: {
-			getList(){
+		async	getList(){
 				let params = {
 					status: this.cur,//订单状态 已支付:1 已备货:2 已收货:3
 					type:this.title == 'add'?1:2,//订单类型 采购订单:1 销售订单:2
 				}
-				this.$api.getOrderList(params,1).then(res => {
+			await	this.$api.getOrderList(params,1).then(res => {
 						this.list=res.items
 				})
 			},
@@ -108,7 +128,6 @@
 								})
 							}
 						}else{
-							console.log(2)
 						}
 					}
 				})
@@ -122,6 +141,10 @@
 				this.cur = Number(index)+1
 				this.getList()
 			}
+		},
+	async	onPullDownRefresh() {
+		await	this.getList()
+			uni.stopPullDownRefresh();
 		},
 		async	onReachBottom(){
 				this.isShowLoad=true
@@ -157,8 +180,8 @@ page{
 	background: $uni-bg-color;
 }
 .img image{
-	width: $uni-img-size-base;
-	height: $uni-img-size-base;
+	width: 45upx;
+	height: 45upx;
 }
 .header{
 	font-size: $uni-font-size-lg;
@@ -192,6 +215,24 @@ page{
 		width: 140upx;
 		text-align: center;
 	}
+	}
+}
+.no-order{
+	position: fixed;
+	top: 90px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	.info{
+		font-size: $uni-font-size-xl;
+		color: $uni-text-color-grey;
+		image{
+			width: 220upx;
+			height: 220upx;
+		}
 	}
 }
 </style>

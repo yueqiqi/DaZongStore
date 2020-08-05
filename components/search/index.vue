@@ -1,8 +1,8 @@
 <!-- 搜索 -->
 <template>
 	<view >
-			<nav-bar @clickLeft="back" :left-icon="arrowleft" :left-text="leftText" :fixed="false" :status-bar='true'>
-				<view slot="default" class="border ipt"  @click="iptClick">
+			<nav-bar :rightWidth='rightWidth' :isWidth='isWidth' @clickLeft="back" :left-icon="arrowleft" :left-text="leftText" :fixed="false" :status-bar='true'>
+				<view :style="{width: wWidth}" slot="default" class="border ipt"  @click="iptClick">
 					<input type="text" :adjust-position='false'	 :focus='focus' v-model="keyword" class="ipt2" placeholder="请输入关键字搜索" placeholder-class='p-ipt'/>
 				</view>
 				<view slot="right" class="code" @click="rightClick">{{rightText}}</view>
@@ -17,6 +17,18 @@
 			navBar
 		},
 		props:{
+			rightWidth:{
+				type:[Number,String],
+				default: '',
+			},
+			isWidth:{
+				type:Boolean,
+				default:false
+			},
+			wWidth:{
+				type:String,
+				default:'100%'
+			},
 			focus:{
 				type:Boolean,
 				default:true
@@ -47,6 +59,7 @@
 		methods: {
 			back(){
 				uni.navigateBack()
+				window.android.androidMethod('toBack','')
 			},
 			iptClick(){
 				this.$emit('iptClick')
@@ -64,13 +77,12 @@
 	}
 	.ipt{
 		width: 400upx;
-		border-radius: $uni-border-radius-xxl!important;
+		border-radius: 8upx;
 		background: $uni-bg-color-white;
 		color: #333333;
-		
 	}
 	.ipt2{
-		padding:0 25upx;
+		padding:10upx 16upx;
 	}
 	.p-ipt{
 		font-size: $uni-font-size-base;

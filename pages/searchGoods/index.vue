@@ -1,7 +1,7 @@
 <!-- 搜索商家商品模板 -->
 <template>
 	<view>
-		<search arrowleft="arrowleft" left-text="返回" rightText="搜索" @rightClick='rightClick' ></search>
+		<search arrowleft="arrowleft" rightText="搜索" @rightClick='rightClick' ></search>
 		<view v-if="list==''">
 			<pageNull title='输入要上架商品名称的关键字,选择所支持上架的商品上架'></pageNull>
 		</view>
@@ -50,7 +50,7 @@
 					key:val
 				}
 				let data = await this.$api.searchGoodsTem(params)
-				this.list=data
+				this.list=data.items
 			},
 			add(val){
 				uni.navigateTo({
@@ -80,7 +80,7 @@
 					uni.hideNavigationBarLoading(); //关闭加载动画
 					return;
 				}
-				_self.list = _self.list.concat(data); //将数据拼接在一起
+				_self.list = _self.list.concat(data.items); //将数据拼接在一起
 				_self.loadingType = 0; //将loadingType归0重置
 				uni.hideNavigationBarLoading(); //关闭加载动画	
 			},

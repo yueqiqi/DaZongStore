@@ -18,7 +18,7 @@ export default {
 		state.orderInfo=order
 	},
 	[MY_ADDRESS](state,address){
-		state.supplierAdd=address
+		// state.supplierAdd=address
 	},
 	[SHOWADDRESS](state,address){
 		state.supplierAdd=address

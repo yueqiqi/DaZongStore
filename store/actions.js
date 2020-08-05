@@ -29,10 +29,14 @@ export default {
 	//   commit(GET_GOODS_INFO,result) 
 	// },
 	//回显采购下单地址
+	async setMyAddress({commit,state},params){
+		const result = await $api.setAddress(params)
+		commit(MY_ADDRESS,params)
+	},
 	async myaddress({commit,state},params) {
 	  const result = await $api.addAddress(params)
 	  // 提交一个mutation
-	  commit(MY_ADDRESS,result) 
+	  commit(MY_ADDRESS,params) 
 	},
 	async showAddress({commit,state},params) {
 	  const result = await $api.getAddress(params)

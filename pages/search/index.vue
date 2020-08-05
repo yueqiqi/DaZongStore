@@ -1,7 +1,7 @@
 <!-- 采购商品搜索 -->
 <template>
 	<view>
-		<search :arrowleft="arrowleft" left-text="返回" rightText="搜索" @rightClick='rightClick' ></search>
+		<search  :arrowleft="arrowleft" rightText="搜索" @rightClick='rightClick' ></search>
 		<card :list="list" @addClick='add'></card>
 		<loadMore :loadingType="loadingType" :contentText="contentText" :isShowLoad='isShowLoad'></loadMore>
 	</view>
@@ -47,7 +47,7 @@
 					key:val
 				}
 				let data = await this.$api.searchGoods(params)
-				this.list=data
+				this.list=data.items
 			},
 			add(val){
 				uni.navigateTo({
@@ -71,13 +71,13 @@
 			}
 			let data = await this.$api.searchGoods(params)
 			this.isShowLoad=false
-			if (data == '') {
+			if (data.items == '') {
 				//没有数据
 				_self.loadingType = 2;
 				uni.hideNavigationBarLoading(); //关闭加载动画
 				return;
 			}
-			_self.list = _self.list.concat(data); //将数据拼接在一起
+			_self.list = _self.list.concat(data.items); //将数据拼接在一起
 			_self.loadingType = 0; //将loadingType归0重置
 			uni.hideNavigationBarLoading(); //关闭加载动画	
 			// order.getOrderList(this.page).then(res => {

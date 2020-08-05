@@ -142,18 +142,38 @@ export default {
 			}
 		},
 		save() {
+			if(this.list[0].val==''){
+				uni.showToast({
+					title:'请输入最小批发量',
+					icon:'none'
+				})
+				return false
+			}
+			if(this.list[1].val==''){
+				uni.showToast({
+					title:'请输入商品单价',
+					icon:'none'
+				})
+				return false
+			}
+			if(this.address==''){
+				uni.showToast({
+					title:'请选择地址',
+					icon:'none'
+				})
+				return false
+			}
 			if (this.goodsType == 'add') {
 				//保存
-				console.log(this.address)
 				let params = {
 					description: this.textarea,
 					merchBankId : this.info.id,
 					endHours :this.address.endHours,
 					startHours:this.address.startHours,
 					merchAddress :this.address.provinceRegion+this.address.detailAddress,
-					price: this.list[0].val,
+					price: this.list[1].val,
 					type: this.deliveryType == '自提' ? 1 : 2,
-					wholesaleNum: this.list[1].val
+					wholesaleNum: this.list[0].val
 				};
 				this.$api.putGoods(params).then(res => {
 					uni.showToast({
@@ -174,9 +194,9 @@ export default {
 					startHours:this.address.startHours,
 					merchAddress :this.address.provinceRegion+this.address.detailAddress,
 					merchBankId: this.info.merchBankId,
-					price: this.list[0].val,
+					price: this.list[1].val,
 					type: this.deliveryType == '自提' ? 1 : 2,
-					wholesaleNum: this.list[1].val
+					wholesaleNum: this.list[0].val
 				};
 				this.$api.setGoods(params).then(res => {
 					uni.showToast({

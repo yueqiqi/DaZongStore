@@ -62,7 +62,7 @@ export default {
 		};
 	},
 	methods: {
-		...mapActions(['myaddress','showAddress']),
+		...mapActions(['myaddress','showAddress','setMyAddress']),
 		testInput(){
 			if(this.name==''){
 				uni.showToast({
@@ -103,7 +103,7 @@ export default {
 				}
 			}
 		},
-		save(){//保存
+	async	save(){//保存
 		let address
 		this.addressType!=1?address=this.province+this.city+this.area+this.address:address=''
 		let params={}
@@ -124,8 +124,13 @@ export default {
 			}
 		}
 			this.testInput()
-			this.myaddress(params)
-			this.showAddress()
+			if(this.supplierAdd!=null&&this.supplierAdd!=''){//修改
+				params.id=this.addressId
+		  	await	this.setMyAddress(params)
+			}else{//新增
+				await	this.myaddress(params)
+			}
+			await	this.showAddress()
 			uni.navigateBack()
 		},
 		changeTime(val,val2){
@@ -180,6 +185,7 @@ export default {
 			this.phone=this.supplierAdd.phone
 			this.address=this.supplierAdd.detailAddress
 			this.province=this.supplierAdd.detailAddress
+			this.addressId=this.supplierAdd.id
 		}
 	},
 	onShow() {

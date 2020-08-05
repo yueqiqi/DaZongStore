@@ -47,6 +47,15 @@
 <script>
 import utils from '@/static/utils.js';
 import {mapState, mapMutations } from 'vuex';
+	window['redirectTo']=function(){
+			uni.showToast({
+				title:'提示',
+				icon:'none'
+			})
+			uni.redirectTo({
+				url:'/pages/list/index?title=add'
+			})
+		}
 export default {
 	data() {
 		return {
@@ -54,7 +63,7 @@ export default {
 			radios: [
 				{ img: require('@/static/wechat.png'), payType: '微信支付', val: 'wxpay', color: 'rgb(0, 204, 0)' },
 				{ img: require('@/static/ali.png'), payType: '支付宝支付', val: 'alipay', color: 'rgb(75, 159, 254)' },
-				{ img: require('@/static/yue.png'), payType: '余额支付', val: 'balance', color: '#F98901' }
+				{ img: require('@/static/yue.png'), payType: '余额支付', val: 'balance', color: '#fc724c' }
 			]
 		};
 	},
@@ -80,11 +89,17 @@ export default {
 					orderNo :this.order.orderNo,
 					payWay :this.checked
 				} 
+				let that = this
 				this.$api.thPartyPay(params).then(res => {
-					
+					if(that.checked=='alipay'){
+						window.android.androidMethod('toPay',JSON.stringify(res))
+					}else{
+						window.android.androidMethod('wxPay',JSON.stringify(res))
+					}
 				})
 			}
-		}
+		},
+		
 	}
 };
 </script>
@@ -127,6 +142,7 @@ export default {
 	.left {
 		width: 70%;
 		border: 1upx solid $uni-color-orange;
+		border-left: 0;
 		border-bottom: 0;
 		padding: 10upx;
 		text {

@@ -4,7 +4,7 @@
 		 class="uni-navbar__content">
 			<uni-status-bar v-if="statusBar" />
 			<view :style="{ color: color,backgroundColor: backgroundColor }" class="uni-navbar__header uni-navbar__content_view">
-				<view @tap="onClickLeft" class="uni-navbar__header-btns uni-navbar__header-btns-left uni-navbar__content_view">
+				<view :style="{width:isWidth?0:''}" @tap="onClickLeft" class="uni-navbar__header-btns uni-navbar__header-btns-left uni-navbar__content_view">
 					<view class="uni-navbar__content_view" v-if="leftIcon.length">
 						<uni-icons :color="color" :type="leftIcon" size="24" />
 					</view>
@@ -21,7 +21,7 @@
 					<!-- 标题插槽 -->
 					<slot />
 				</view>
-				<view :class="title.length ? 'uni-navbar__header-btns-right' : ''" @tap="onClickRight" class="uni-navbar__header-btns uni-navbar__content_view">
+				<view :style="{width:rightWidth}" :class="title.length ? 'uni-navbar__header-btns-right' : ''" @tap="onClickRight" class="uni-navbar__header-btns uni-navbar__content_view">
 					<view class="uni-navbar__content_view" v-if="rightIcon.length">
 						<uni-icons :color="color" :type="rightIcon" size="24" />
 					</view>
@@ -50,7 +50,16 @@
 			uniStatusBar,
 			uniIcons
 		},
+		// inject:['rightWidth'],
 		props: {
+			rightWidth:{
+				type:[Number,String],
+				default: '',
+			},
+			isWidth:{
+				type: Boolean,
+				default: false,
+			},
 			title: {
 				type: String,
 				default: ""
@@ -81,7 +90,7 @@
 			},
 			backgroundColor: {
 				type: String,
-				default: "#F98901"
+				default: "#fc724c"
 			},
 			statusBar: {
 				type: [Boolean, String],
@@ -113,7 +122,7 @@
 </script>
 
 <style lang="scss" scoped>
-	$nav-height: 44px;
+	$nav-height: 50px;
 	.uni-nav-bar-text {
 		/* #ifdef APP-PLUS */
 		font-size: 34rpx;
@@ -133,7 +142,7 @@
 	.uni-navbar__content {
 		position: relative;
 		width: 750rpx;
-		background-color: #F98901;
+		background-color: #fc724c;
 		overflow: hidden;
 	}
 
@@ -173,7 +182,7 @@
 		/* #ifndef APP-NVUE */
 		display: flex;
 		/* #endif */
-		width: 150rpx;
+		width: 70rpx;
 		justify-content: flex-start;
 	}
 

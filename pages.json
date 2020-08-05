@@ -1,4 +1,7 @@
 {
+	// "easycom": {
+	// 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	// 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
@@ -55,7 +58,9 @@
         ,{
             "path" : "pages/list/index",
             "style" : {
-							"navigationBarTitleText": "采购订单列表"
+							"navigationBarTitleText": "采购订单列表",
+							"enablePullDownRefresh": true, //设置为true表示当前页面开启下拉刷新
+							"backgroundTextStyle": "dark" //下拉 loading 的样式，仅支持 dark/light
 						}
         }
         ,{
@@ -86,11 +91,19 @@
 							"navigationBarTitleText": "下单支付"
 						}
         }
+        ,{
+            "path" : "pages/order/index",
+            "style" : {
+							"navigationBarTitleText": "订单列表",
+							"enablePullDownRefresh": true, //设置为true表示当前页面开启下拉刷新
+							"backgroundTextStyle": "dark" //下拉 loading 的样式，仅支持 dark/light
+						}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "大宗商城",
-		"navigationBarBackgroundColor": "#F98901",
+		"navigationBarBackgroundColor": "#fc724c",
 		"backgroundColor": "#F8F8F8"
 	}
 }

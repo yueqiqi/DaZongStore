@@ -152,7 +152,7 @@ export default {
 				title: '提示',
 				content: '是否删除该地址',
 				mask: true,
-				confirmColor: '#F98901',
+				confirmColor: '#fc724c',
 				success(res) {
 					if (res.confirm) {
 						that.$api.delAddress(that.lid).then(res => {

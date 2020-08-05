@@ -1,6 +1,7 @@
 import request from "./request";
-let baseUrl = "http://192.168.0.107:10010/";
-// let baseUrl = "https://takeout.lbh360.com";
+let baseUrl = "http://192.168.0.107:10010/bulk/";
+// let baseUrl = "https://takeout.lbh360.com/bulk/";
+
 //可以new多个request来支持多个域名请求
 let $http = new request({
 	//接口请求地址
@@ -78,42 +79,50 @@ $http.dataFactory = function (res) {
 		} else if (httpData.code == "210") { //未登录或登录已失效
 			if (loginPopupNum <= 0) {
 				loginPopupNum++;
-				uni.showModal({
-					title: '温馨提示',
-					content: '此时此刻需要您登录喔~',
-					confirmText: "去登录",
-					// cancelText: "再逛会",
-					success: res2 => {
-						loginPopupNum--;
-						if (res2.confirm) {
-							// uni.navigateTo({
-							uni.reLaunch({
-								url:'/pages/login/index'
-							})
-						}
-					}
+				uni.showToast({
+					title: "登陆过期请登陆后尝试~",
+					icon: "none"
 				});
+				// uni.showModal({
+				// 	title: '温馨提示',
+				// 	content: '此时此刻需要您登录喔~',
+				// 	confirmText: "去登录",
+				// 	// cancelText: "再逛会",
+				// 	success: res2 => {
+				// 		loginPopupNum--;
+				// 		if (res2.confirm) {
+				// 			// uni.navigateTo({
+				// 			uni.reLaunch({
+				// 				url:'/pages/login/index'
+				// 			})
+				// 		}
+				// 	}
+				// });
 			}
 			// 返回错误的结果(catch接受数据)
 			res.reject(httpData);
 		}else if(httpData.code == "203"){
 			if (loginPopupNum <= 0) {
 				loginPopupNum++;
-				uni.showModal({
-					title: '温馨提示',
-					content: '登陆已过期请重新登陆~',
-					confirmText: "去登陆",
-					// cancelText: "再逛会",
-					success: res2 => {
-						loginPopupNum--;
-						if (res2.confirm) {
-							// uni.navigateTo({
-							uni.reLaunch({
-								url:"/pages/login/phoneLogin"
-							});
-						}
-					}
+				uni.showToast({
+					title: "登陆过期请登陆后尝试~",
+					icon: "none"
 				});
+				// uni.showModal({
+				// 	title: '温馨提示',
+				// 	content: '登陆已过期请重新登陆~',
+				// 	confirmText: "去登陆",
+				// 	// cancelText: "再逛会",
+				// 	success: res2 => {
+				// 		loginPopupNum--;
+				// 		if (res2.confirm) {
+				// 			// uni.navigateTo({
+				// 			uni.reLaunch({
+				// 				url:"/pages/login/phoneLogin"
+				// 			});
+				// 		}
+				// 	}
+				// });
 			}
 			// 返回错误的结果(catch接受数据)
 			res.reject(httpData);

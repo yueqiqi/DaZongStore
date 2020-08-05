@@ -61,7 +61,7 @@ export default {
 		clickItem: {
 			//选中时的样式
 			type: String,
-			default: '#F98901'
+			default: '#fc724c'
 		},
 		normal: {
 			//正常样式
@@ -215,6 +215,6 @@ export default {
 .animateItem {
 	//下拉选择选中样式
 	background: #fff;
-	color: #F98901;
+	color: #fc724c;
 }
 </style>

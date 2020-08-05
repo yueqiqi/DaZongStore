@@ -1,8 +1,8 @@
 <!-- 采购商城首页 -->
 <template>
 	<view>
-		<search :focus='false' rightText="我的商品" @rightClick='rightClick' @iptClick='iptClick'></search>
-		<navTab  ref="navTab" :tabTitle="tabTitle" :tabClick="currentTab" @changeTab="changeTab"></navTab>
+		<search :focus='false' :isWidth='true' :rightWidth='0' @iptClick='iptClick'></search>
+		<navTab wWidth='100%' ref="navTab" :tabTitle="tabTitle" :tabClick="currentTab" @changeTab="changeTab"></navTab>
 		<view class="sticks"><swiperTab ref='swiperTab' :parent_id='parent_id' :tabList="tabTitle" :TabCur="currentTab" :leftCategoryList='endList'></swiperTab></view>
 	</view>
 </template>
@@ -17,6 +17,11 @@ export default {
 		swiperTab,
 		search,
 	},
+	// provide(){
+	// 	return{
+	// 		rightWidth:0
+	// 	}
+	// },
 	data() {
 		return {
 			endList:[],
@@ -31,8 +36,10 @@ export default {
 			currentTab: 0 //sweiper所在页
 		};
 	},
-async	onLoad() {
-	
+async	onLoad(options) {
+	if(!!options.token){
+		uni.setStorageSync('userToken',options.token);
+	}
 	await	this.getCategoryList()
 		this.endList =	this.leftCategoryList.filter(val => {
 				return val.parentid==this.tabTitle[0].id

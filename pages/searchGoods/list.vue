@@ -1,7 +1,7 @@
 <!-- 我的商品 -->
 <template>
 	<view>
-		<search arrowleft="arrowleft" left-text="返回" rightText="添加商品" @rightClick='rightClick' ></search>
+		<search arrowleft="arrowleft"  rightText="上架商品" @rightClick='rightClick' ></search>
 		<goodsLists types='list' :list='list' @addClick='add'></goodsLists>
 	</view>
 </template>
@@ -23,7 +23,10 @@
 		onShow() {
 			this.getList()
 		},
-		onLoad() {
+		onLoad(options) {
+			if(!!options.token){
+				uni.setStorageSync('userToken',options.token);
+			}
 			this.getList()
 		},
 		methods: {

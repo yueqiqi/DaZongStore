@@ -43,10 +43,11 @@
 			</view>
 			<view class="num mt-sm flex">购买数量：<input type="number" v-model="goodsNum" placeholder-style='font-size:20upx' :placeholder="'最少起批数量'+goods.wholesaleNum"/><text class="ml">袋</text></view>
 			<view class="flex mt">
-				<view class="title">{{ goods.type == 1 ? '自提' : '配送' }}时间:</view>
-				<view class="right ml">
-					<pickerTime @changeTime="changeTime" :sTime='0' :cTime='23'>
-						<span slot='pCon' class="mr-sm font-info" @click="selectTime('datetime')">{{ timer }}</span>
+				<view class="title left-title">{{ goods.type == 1 ? '自提' : '配送' }}时间：</view>
+				<view class="right-time">
+					<pickerTime style='width: 100%;' @changeTime="changeTime" :sTime='0' :cTime='23'>
+						<view slot='pCon' class="mr-sm font-info flex flex-sp center" @click="selectTime('datetime')"><view>{{ timer }}</view><view class="alIcon">&#xe600;</view></view>
+					
 					</pickerTime>
 				</view>
 			</view>
@@ -104,7 +105,6 @@ export default {
 		...mapActions(['showAddress']),
 		...mapMutations(['order_pay']),
 		pay(){
-			console.log(this.POAddress)
 			if(Number(this.goodsNum)<Number(this.goods.wholesaleNum)){
 				uni.showToast({
 					title: '起批数量至少为'+this.goods.wholesaleNum, 
@@ -120,7 +120,7 @@ export default {
 				})
 				return false
 			}
-			if(this.POAddress==''&&this.POAddress==null){
+			if(this.POAddress==null){
 				uni.showToast({
 					title: '请选择地址', 
 					icon: "none",
@@ -147,9 +147,24 @@ export default {
 			})
 		},
 		callPhone(val) {
-			uni.makePhoneCall({
-				phoneNumber:val
-			})
+			if(!!val){
+				uni.showModal({
+					content:'拨打商家电话',
+					confirmText:'去拨打',
+					success:res=>{
+						if(res.confirm){
+							uni.makePhoneCall({
+								phoneNumber:val
+							})
+						}
+					}
+				})
+			}else{
+				uni.showToast({
+					title:'商家电话号码异常',
+					icon:'none'
+				})
+			}
 		},
 		changeTime(val,val2){
 			let end = Number(val.split(' ')[1].split(':')[0]) + 1;
@@ -273,5 +288,16 @@ export default {
 		color: $uni-bg-color-white;
 	}
 }
-.font-info{color: #909090;}
+.font-info{color: #909090;width: 100%;}
+.right-time{
+	width: 100%;
+	display: flex;
+	align-items: center;
+	.alIcon{
+		color: #909090;
+	}
+}
+.left-title{
+	width: 222upx;
+}
 </style>
