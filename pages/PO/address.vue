@@ -105,7 +105,7 @@ export default {
 		},
 	async	save(){//保存
 		let address
-		this.addressType!=1?address=this.province+this.city+this.area+this.address:address=''
+		this.addressType!=1?address=this.province+'/'+this.city+'/'+this.area:address=''
 		let params={}
 		if(this.addressType==1){//自提
 			 params = {
@@ -181,11 +181,14 @@ export default {
 	onLoad(option) {
 		this.addressType = option.type;
 		if(this.supplierAdd!=null&&this.supplierAdd!=''){
+			console.log(this.supplierAdd)
 			this.name=this.supplierAdd.name
 			this.phone=this.supplierAdd.phone
 			this.address=this.supplierAdd.detailAddress
-			this.province=this.supplierAdd.detailAddress
 			this.addressId=this.supplierAdd.id
+			this.province=this.supplierAdd.provinceRegion.split('/')[0]||this.supplierAdd.provinceRegion
+			this.city=this.supplierAdd.provinceRegion.split('/')[1]||'市'
+			this.area=this.supplierAdd.provinceRegion.split('/')[2]||'区'
 		}
 	},
 	onShow() {

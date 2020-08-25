@@ -130,6 +130,9 @@ export default {
 		_self.list = _self.list.concat(data.items); //将数据拼接在一起
 		_self.loadingType = 0; //将loadingType归0重置
 		uni.hideNavigationBarLoading(); //关闭加载动画
+	},
+	onUnload() {
+		window.android.androidMethod('toBack','')
 	}
 };
 </script>

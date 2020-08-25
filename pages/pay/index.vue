@@ -20,10 +20,10 @@
 			<block v-for="(item, index) in radios" :key="index">
 				<view class="flex flex-sp center mb plr">
 					<view class="flex center">
-						<view><image class="img mr-sm" :src="item.img" mode="widthFix"></image></view>
+						<view><image class="img mr-sm" :src="item.img||null" mode="widthFix"></image></view>
 						<view class="text">
 							{{ item.payType }}
-							<text class="balance ml-xs" v-if="item.val == 'balance'">(可用余额：¥{{ balance }})</text>
+							<text class="balance ml-xs" v-if="item.val == 'balance'">(可用余额：¥{{ balance||0 }})</text>
 						</view>
 					</view>
 					<view>
@@ -61,9 +61,9 @@ export default {
 		return {
 			checked: 'wxpay',
 			radios: [
-				{ img: require('@/static/wechat.png'), payType: '微信支付', val: 'wxpay', color: 'rgb(0, 204, 0)' },
-				{ img: require('@/static/ali.png'), payType: '支付宝支付', val: 'alipay', color: 'rgb(75, 159, 254)' },
-				{ img: require('@/static/yue.png'), payType: '余额支付', val: 'balance', color: '#fc724c' }
+				{ img: require('../../static/wechat.png'), payType: '微信支付', val: 'wxpay', color: 'rgb(0, 204, 0)' },
+				{ img: require('../../static/ali.png'), payType: '支付宝支付', val: 'alipay', color: 'rgb(75, 159, 254)' },
+				{ img: require('../../static/money1.png'), payType: '余额支付', val: 'balance', color: 'rgb(252,114,76)' }
 			]
 		};
 	},
@@ -90,6 +90,7 @@ export default {
 					payWay :this.checked
 				} 
 				let that = this
+				console.log(params)
 				this.$api.thPartyPay(params).then(res => {
 					if(that.checked=='alipay'){
 						window.android.androidMethod('toPay',JSON.stringify(res))
@@ -117,6 +118,7 @@ export default {
 .body {
 	.img {
 		width: $uni-img-size-lg;
+		height: $uni-img-size-lg;
 	}
 	.payType {
 		width: 100%;

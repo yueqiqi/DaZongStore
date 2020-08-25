@@ -53,7 +53,7 @@
 												<text class="alIcon">&#xe600;</text>
 											</view>
 										</view>
-										<view class="card-body" v-if="rightCategoryList.type"><card :list="endList" @addClick="add"></card></view>
+										<view class="card-body" v-if="rightCategoryList.type"><card :isShowNotice='false' :list="endList" @addClick="add"></card></view>
 									</view>
 								</block>
 							</scroll-view>

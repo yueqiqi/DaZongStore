@@ -72,7 +72,7 @@
 					page:this.page,
 					key:this.keyWord
 				}
-				let data = await this.$api.searchGoods(params)
+				let data = await this.$api.searchGoodsTem(params)
 				this.isShowLoad=false
 				if (data == '') {
 					//没有数据

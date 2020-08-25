@@ -21,6 +21,10 @@
 				type:[Number,String],
 				default: '',
 			},
+			cBack:{
+				type:Boolean,
+				default:false
+			},
 			isWidth:{
 				type:Boolean,
 				default:false
@@ -58,8 +62,11 @@
 		},
 		methods: {
 			back(){
-				uni.navigateBack()
-				window.android.androidMethod('toBack','')
+				if(this.cBack==true){
+					window.android.androidMethod('toBack','')
+				}else{
+					uni.navigateBack()
+				}		
 			},
 			iptClick(){
 				this.$emit('iptClick')

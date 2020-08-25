@@ -1,7 +1,7 @@
 <!-- 我的商品 -->
 <template>
 	<view>
-		<search arrowleft="arrowleft"  rightText="上架商品" @rightClick='rightClick' ></search>
+		<search :cBack='true' arrowleft="arrowleft"  rightText="上架商品" @rightClick='rightClick' ></search>
 		<goodsLists types='list' :list='list' @addClick='add'></goodsLists>
 	</view>
 </template>

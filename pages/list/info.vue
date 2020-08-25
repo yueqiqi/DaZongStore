@@ -9,7 +9,8 @@
 			<view class="line">配送时间：{{ info.takeTime }}</view>
 			<view class="flex flex-sp line">
 				<view>收货人：{{ info.receiverName  }}</view>
-				<view @click="callPhone(info.receiverPhone)">
+				<!-- @click="callPhone(info.receiverPhone)" -->
+				<view>
 					<text class="alIcon mr-sm">&#xe682;</text>
 					{{ info.receiverPhone }}
 				</view>
@@ -22,9 +23,11 @@
 					<view class="flex flex-center mr-sm"><image src="../../static/store.png" mode=""></image></view>
 					<view>{{ info.sellerName }}</view>
 				</view>
-				<view class="callphone" @click="callPhone(info.sellerPhone)">
+				<!-- @click="callPhone(info.sellerPhone)" -->
+				<view class="callphone" >
 					<text class="alIcon">&#xe682;</text>
-					<text class="ml-xs">联系商家</text>
+					<!-- <text class="ml-xs">联系商家</text> -->
+					<text class="ml-xs">{{info.sellerPhone}}</text>
 				</view>
 			</view>
 			<view class="flex mt">
@@ -118,9 +121,24 @@ export default {
 			});
 		},
 		callPhone(val) {
-			uni.makePhoneCall({
-				phoneNumber: val
-			});
+			if(!!val){
+				uni.showModal({
+					content:'拨打商家电话',
+					confirmText:'去拨打',
+					success:res=>{
+						if(res.confirm){
+							uni.makePhoneCall({
+								phoneNumber:val
+							})
+						}
+					}
+				})
+			}else{
+				uni.showToast({
+					title:'商家电话号码异常',
+					icon:'none'
+				})
+			}
 		}
 	}
 };

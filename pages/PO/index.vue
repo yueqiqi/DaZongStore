@@ -10,7 +10,7 @@
 				<view class="phone">{{ POAddress.phone }}</view>
 			</view>
 			<view class="flex flex flex-sp mt mb">
-				<view class="over">{{ POAddress.detailAddress }}</view>
+				<view class="over">{{ POAddress.provinceRegion+POAddress.detailAddress }}</view>
 				<view class="alIcon">&#xe600;</view>
 			</view>
 			<view class="notice">
@@ -27,9 +27,11 @@
 					</view>
 					<view>{{ goods.compName }}</view>
 				</view>
-				<view class="callphone" @click="callPhone(goods.compPhone )">
+				<!-- @click="callPhone(goods.compPhone )" -->
+				<view class="callphone" >
 					<text class="alIcon">&#xe682;</text>
-					<text class="ml-xs">联系商家</text>
+					<!-- <text class="ml-xs">联系商家</text> -->
+					<text class="ml-xs">{{goods.compPhone}}</text>
 				</view>
 			</view>
 			<view class="goods flex mt">
@@ -61,7 +63,7 @@
 		<view class="footer flex flex-sp">
 			<view class="left">
 				<view>共计：<text>{{totalMoney}}</text>元</view>
-				<view class="num">{{goods.profit}}</view>
+				<view class="num" v-if="profit!=0">预计可获利：{{profit}}</view>
 			</view>
 			<view class="right" @click="pay">下单支付</view>
 		</view>
@@ -77,6 +79,16 @@ export default {
 	},
 	computed: {
 		...mapState(['POShop','goodsInfo','supplierAdd']),
+		profit(){
+			let price = 0
+			if(!!this.goods.mySellPrice){
+				
+			price = (this.goods.mySellPrice-this.goods.price)*(this.goodsNum<=this.goods.wholesaleNum?this.goods.wholesaleNum:this.goodsNum)
+			}else{
+				price=0
+			}
+			return price.toFixed(2)
+		},
 		totalMoney(){
 			return Number((this.goods.price)*(this.goodsNum)).toFixed(2)
 		},
@@ -266,6 +278,7 @@ export default {
 	bottom: 0;
 	left: 0;
 	right:0;
+	background: #FFFFFF;
 	.left{
 		width: 70%;
 		border: 1upx solid $uni-color-orange;

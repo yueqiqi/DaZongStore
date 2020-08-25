@@ -99,6 +99,10 @@
 		onUnload() {
 			if(this.isFromAndroid){
 				window.android.androidMethod('toBack','')
+			}else{
+				uni.redirectTo({
+					url:'/pages/index/index'
+				})
 			}
 		},
 		methods: {
@@ -143,7 +147,9 @@
 			}
 		},
 	async	onPullDownRefresh() {
-		await	this.getList()
+		await	this.getList().catch(err=> {
+			uni.stopPullDownRefresh();
+		})
 			uni.stopPullDownRefresh();
 		},
 		async	onReachBottom(){
@@ -194,6 +200,11 @@ page{
 	.orderNo{
 		font-size: $uni-font-size-sm;
 		color: $uni-text-color-grey;
+		-webkit-user-select: text!important;
+		-moz-user-select: text!important;
+		-ms-user-select: text!important;
+		user-select: text!important;
+
 	}
 	.btns{
 		font-size: $uni-font-size-sm;

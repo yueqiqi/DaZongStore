@@ -1,7 +1,7 @@
 <!-- 采购商城首页 -->
 <template>
 	<view>
-		<search :focus='false' :isWidth='true' :rightWidth='0' @iptClick='iptClick'></search>
+		<search :cBack='true' arrowleft="arrowleft" :focus='false'  :rightWidth='0' @iptClick='iptClick'></search>
 		<navTab wWidth='100%' ref="navTab" :tabTitle="tabTitle" :tabClick="currentTab" @changeTab="changeTab"></navTab>
 		<view class="sticks"><swiperTab ref='swiperTab' :parent_id='parent_id' :tabList="tabTitle" :TabCur="currentTab" :leftCategoryList='endList'></swiperTab></view>
 	</view>
@@ -17,11 +17,6 @@ export default {
 		swiperTab,
 		search,
 	},
-	// provide(){
-	// 	return{
-	// 		rightWidth:0
-	// 	}
-	// },
 	data() {
 		return {
 			endList:[],

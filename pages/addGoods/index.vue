@@ -36,7 +36,7 @@
 				</view>
 				<view class="flex flex-sp mt">
 					<view>营业时间</view>
-					<view class="right">{{ address | openHour }}</view>
+					<view  @click="chooseAdd" class="right">{{ address | openHour }}</view>
 				</view>
 			</view>
 		</view>

@@ -1,6 +1,6 @@
 import request from "./request";
-let baseUrl = "http://192.168.0.107:10010/bulk/";
-// let baseUrl = "https://takeout.lbh360.com/bulk/";
+// let baseUrl = "http://192.168.0.107:10010/bulk/";
+let baseUrl = "https://takeout.lbh360.com/bulk/";
 
 //可以new多个request来支持多个域名请求
 let $http = new request({
