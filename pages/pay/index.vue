@@ -93,9 +93,17 @@ export default {
 				console.log(params)
 				this.$api.thPartyPay(params).then(res => {
 					if(that.checked=='alipay'){
-						window.android.androidMethod('toPay',JSON.stringify(res))
+						if(uni.getStorageSync("OS")=='ios'){
+							window.webkit.messageHandlers.aliPay.postMessage(JSON.stringify(res))
+						}else{
+							window.android.androidMethod('toPay',JSON.stringify(res))
+						}
 					}else{
-						window.android.androidMethod('wxPay',JSON.stringify(res))
+						if(uni.getStorageSync("OS")=='ios'){
+							window.webkit.messageHandlers.wxPay.postMessage(JSON.stringify(res))
+						}else{
+							window.android.androidMethod('wxPay',JSON.stringify(res))
+						}
 					}
 				})
 			}

@@ -32,6 +32,7 @@ export default {
 		};
 	},
 async	onLoad(options) {
+	
 	if(!!options.token){
 		uni.setStorageSync('userToken',options.token);
 	}

@@ -98,7 +98,11 @@
 		},
 		onUnload() {
 			if(this.isFromAndroid){
+				if(uni.getStorageSync("OS")=='ios'){
+					window.webkit.messageHandlers.navBack.postMessage(null)
+				}else{
 				window.android.androidMethod('toBack','')
+				}
 			}else{
 				uni.redirectTo({
 					url:'/pages/index/index'

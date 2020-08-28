@@ -2,6 +2,7 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			uni.setStorageSync('OS',uni.getSystemInfoSync().platform)
 		},
 		onShow: function() {
 			

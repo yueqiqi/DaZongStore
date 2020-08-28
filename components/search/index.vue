@@ -63,7 +63,11 @@
 		methods: {
 			back(){
 				if(this.cBack==true){
-					window.android.androidMethod('toBack','')
+					if(uni.getStorageSync("OS")=='ios'){
+						window.webkit.messageHandlers.navBack.postMessage(null)
+					}else{
+						window.android.androidMethod('toBack','')
+					}
 				}else{
 					uni.navigateBack()
 				}		

@@ -132,7 +132,11 @@ export default {
 		uni.hideNavigationBarLoading(); //关闭加载动画
 	},
 	onUnload() {
+		if(uni.getStorageSync("OS")=='ios'){
+			window.webkit.messageHandlers.navBack.postMessage(null)
+		}else{
 		window.android.androidMethod('toBack','')
+		}
 	}
 };
 </script>
