@@ -29,7 +29,7 @@
 						<view >{{item.orderTime}}</view>
 					</view>
 					<view class="flex flex-sp center">
-						<view >合计：<text style="color: #ff0000;">¥{{item.totalPrice }}元</text> </view>
+						<view >合计：<text style="color: #ff0000;">¥{{item.totalPrice }}元</text><text>({{item.type==1?'自提':'配送'}})</text> </view>
 						<view class="flex btns">
 							<view class="btn-info" @click="goInfo(item.orderNo)">订单详情</view>
 							<view v-if="(title == 'add'&&item.status==2)||(title != 'add'&&item.status==1)" class="btn-confirm ml-xs" @click="confirm(item,index)">{{title=='add'?'确认收货':'备货完成'}}</view>

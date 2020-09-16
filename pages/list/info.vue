@@ -15,7 +15,7 @@
 					{{ info.receiverPhone }}
 				</view>
 			</view>
-			<view class="line">收货地址：{{ info.detailAddress }}</view>
+			<view class="line" v-if="info.type!=1">收货地址：{{ info.detailAddress }}</view>
 		</view>
 		<view class="body mt plr bg-white pt pb">
 			<view class="flex flex-sp border-bottom pb-sm pt-sm" v-if="orderType == 'add'">
@@ -45,6 +45,7 @@
 					<view class="info ml">购买数量：{{ info.num }}</view>
 				</view>
 			</view>
+			<view class="remarks mt" v-if="info.type==1">自提地址：{{info.detailAddress}}</view>
 			<view class="remarks mt">订单留言：{{ info.remark }}</view>
 			<view class="remarks mt">
 				订单金额：

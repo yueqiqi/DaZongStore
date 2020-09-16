@@ -42,7 +42,7 @@
 		</view>
 		<view class="footer">
 			<view class="mt mb">商品描述</view>
-			<view class="area flex flex-center"><textarea v-model="textarea" placeholder="请输入该商品描述" /></view>
+			<view class="area flex flex-center"><textarea maxlength='-1' v-model="textarea" placeholder="请输入该商品描述" /></view>
 		</view>
 		<view class="foot flex">
 			<view class="left-btn" @click="cancel">
@@ -227,8 +227,8 @@ export default {
 				this.list[0].type = res.unitName;
 				this.list[1].type = '元/' + res.unitName;
 				this.deliveryType= res.type==1?'自提':'配送'
-				this.list[0].val=res.price 
-				this.list[1].val=res.wholesaleNum
+				this.list[1].val=res.price 
+				this.list[0].val=res.wholesaleNum
 				this.textarea=res.description
 				let data = {
 					startHours:res.startHours,

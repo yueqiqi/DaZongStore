@@ -34,7 +34,7 @@
 				</view>
 				<view class="flex-sp flex">
 					<view class="left">订单金额：</view>
-					<view class="right">{{ item.actualPrice }}元</view>
+					<view class="right">{{ item.actualPrice }}元<text>({{item.type==1?'自提':'配送'}})</text></view>
 				</view>
 			</view>
 		</block>

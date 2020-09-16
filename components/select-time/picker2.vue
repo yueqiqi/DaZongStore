@@ -52,13 +52,18 @@ export default {
 	data() {
 		return {
 			sDayNum: 0,
-			multiArray: [['今天', '明天', '3-2', '3-3', '3-4', '3-5'], [0, 1, 2, 3, 4, 5, 6], [0, 10, 20]],
+			multiArray: [[], [0, 1, 2, 3, 4, 5, 6]],
 			multiIndex: [0, 0, 0],
 			multiSelector: ''
 		};
 	},
 	beforeMount() {
-		this.pickerTap();
+		
+	},
+	watch: {
+		cTime(newVal, oldVal) {
+			this.pickerTap();
+		}
 	},
 	methods: {
 		timeFormat: function(num) {
@@ -134,7 +139,7 @@ export default {
 
 			data.multiArray[0] = monthDay;
 			data.multiArray[1] = hours;
-			data.multiArray[2] = minute;
+			// data.multiArray[2] = minute;
 			this.multiArray = data.multiArray;
 			this.multiIndex = data.multiIndex;
 		},
@@ -147,7 +152,7 @@ export default {
 				let date1 = new Date(date);
 				let sT = +this.sTime;
 				let eT = +this.cTime;
-
+				console.log('sT',sT)
 				if (sT <= eT) {
 					let h = date1.getHours() < sT ? sT : date1.getHours();
 					h = h + parseInt(this.timeNum);
@@ -186,7 +191,6 @@ export default {
 			} else if (e.detail.column == 0 && e.detail.value != 0) {
 				let sT = +this.sTime;
 				let eT = +this.cTime;
-
 				if (sT <= eT) {
 					for (let i = sT; i <= eT; i++) {
 						hours.push(this.timeFormat(i) + '时');
@@ -207,7 +211,7 @@ export default {
 			let da = this.multiArray;
 			let di = e.detail.value;
 
-			let caseDate = da[0][di[0]] + ' ' + da[1][di[1]].replace('时', ':') + this.timeFormat(da[2][di[2]].replace('分', '')) ;
+			let caseDate = da[0][di[0]] + ' ' + da[1][di[1]].replace('时', '')
 
 			let appointTime = new Date(caseDate.replace(/-/g,'/')).getTime() / 1000;
 			// if (appointTime < new Date().getTime() / 1000) {
