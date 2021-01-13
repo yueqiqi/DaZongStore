@@ -24,6 +24,7 @@
 						<view class="text">
 							{{ item.payType }}
 							<text class="balance ml-xs" v-if="item.val == 'balance'">(可用余额：¥{{ balance||0 }})</text>
+							<text v-show="item.transRate<1" style="font-size:26rpx;color: red;margion-left" class="ml-sm">({{item.transRate}}折)</text>
 						</view>
 					</view>
 					<view>
@@ -36,7 +37,9 @@
 			<view class="left flex center">
 				<view>
 					应付：
-					<text>{{ order.actualPrice  }}元</text>
+					<!-- order.actualPrice  -->
+					<!--  -->
+					<text :style="{textDecoration:shouldPay<order.actualPrice?' line-through':'',color:shouldPay<order.actualPrice?'#666':''}">{{ order.actualPrice  }}元</text><text v-show="shouldPay<order.actualPrice" style="color: #D41B14;" class="ml-sm">{{shouldPay}}元</text>
 				</view>
 			</view>
 			<view class="right" @click="pay">立即支付</view>
@@ -47,31 +50,66 @@
 <script>
 import utils from '@/static/utils.js';
 import {mapState, mapMutations } from 'vuex';
-	window['redirectTo']=function(){
-			uni.showToast({
-				title:'提示',
-				icon:'none'
-			})
-			uni.redirectTo({
-				url:'/pages/list/index?title=add'
-			})
-		}
+window['redirectTo']=function(){
+		uni.showToast({
+			title:'提示',
+			icon:'none'
+		})
+		uni.redirectTo({
+			url:'/pages/list/index?title=add'
+		})
+	}
 export default {
 	data() {
 		return {
-			checked: 'wxpay',
+			shouldPay:0,
+			checked: '',
 			radios: [
-				{ img: require('../../static/wechat.png'), payType: '微信支付', val: 'wxpay', color: 'rgb(0, 204, 0)' },
-				{ img: require('../../static/ali.png'), payType: '支付宝支付', val: 'alipay', color: 'rgb(75, 159, 254)' },
-				{ img: require('../../static/money1.png'), payType: '余额支付', val: 'balance', color: 'rgb(252,114,76)' }
+				{ img: require('../../static/wechat.png'), payType: '微信支付', val: 'wxpay', color: 'rgb(0, 204, 0)' ,transRate:0},
+				{ img: require('../../static/ali.png'), payType: '支付宝支付', val: 'alipay', color: 'rgb(75, 159, 254)',transRate:0 },
+				{ img: require('../../static/money1.png'), payType: '余额支付', val: 'balance', color: 'rgb(252,114,76)' ,transRate:0}
 			]
 		};
+	},
+	onLoad() {
+		let that =this
+		this.checked='wxpay'
+		this.radios.map(item => {
+			that.order.transRateResps.map(val => {
+				if(item.val==val.platform){
+					that.$set(item,'transRate',val.transRate)
+					// item.transRate=
+				}
+			})
+		})
+		console.log(this.radios)
+	},
+	watch: {
+		checked:{
+			handler(newVal) {
+			let that = this
+			  switch(newVal){
+					case 'alipay':
+						this.shouldPay=(this.order.transRateResps[that.order.transRateResps.findIndex((val)=>val.platform=='alipay')].transRate*that.order.actualPrice)
+					break;
+					case 'balance':
+					this.shouldPay=(this.order.transRateResps[that.order.transRateResps.findIndex((val)=>val.platform=='balance')].transRate*that.order.actualPrice)
+					break;
+					default:
+					this.shouldPay=(this.order.transRateResps[that.order.transRateResps.findIndex((val)=>val.platform=='wxpay')].transRate)*that.order.actualPrice
+				}
+			},
+			deep: true ,// 表示开启深度监听
+		}
 	},
 	computed: {
 		...mapState({
 			order:state=>state.orderInfo,
 			balance:state=>state.orderInfo.availableBalance
-		})
+		}),
+		// shouldPay(){
+			
+		// },
 	},
 	methods: {
 		radioChange(val) {
@@ -90,7 +128,6 @@ export default {
 					payWay :this.checked
 				} 
 				let that = this
-				console.log(params)
 				this.$api.thPartyPay(params).then(res => {
 					if(that.checked=='alipay'){
 						if(uni.getStorageSync("OS")=='ios'){

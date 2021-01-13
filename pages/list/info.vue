@@ -10,7 +10,7 @@
 			<view class="flex flex-sp line">
 				<view>收货人：{{ info.receiverName  }}</view>
 				<!-- @click="callPhone(info.receiverPhone)" -->
-				<view>
+				<view @click="callPhone(info.receiverPhone)">
 					<text class="alIcon mr-sm">&#xe682;</text>
 					{{ info.receiverPhone }}
 				</view>
@@ -24,7 +24,7 @@
 					<view>{{ info.sellerName }}</view>
 				</view>
 				<!-- @click="callPhone(info.sellerPhone)" -->
-				<view class="callphone" >
+				<view class="callphone" @click="callPhone(info.sellerPhone)">
 					<text class="alIcon">&#xe682;</text>
 					<!-- <text class="ml-xs">联系商家</text> -->
 					<text class="ml-xs">{{info.sellerPhone}}</text>
@@ -100,8 +100,8 @@ export default {
 		confirm() {
 			let that = this;
 			uni.showModal({
-				title: '收货提示',
-				content: '是否确认' + this.orderType == 'add' ? '收货' : '备货' + '?确认后订单状态将改变!',
+				title: '状态提示',
+				content: '是否确认' +( this.orderType == 'add' ? '收货' : '备货' + '?确认后订单状态将改变!'),
 				success(res) {
 					if (res.confirm) {
 						if (that.orderType == 'add') {
@@ -132,6 +132,12 @@ export default {
 								phoneNumber:val
 							})
 						}
+					},
+					fail(err) {
+						uni.showToast({
+							title:'拨打失败'+err,
+							icon:'none'
+						})
 					}
 				})
 			}else{

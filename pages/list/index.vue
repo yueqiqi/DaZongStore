@@ -84,16 +84,18 @@
 			});
 		},
 	async	onLoad(options) {
+		let that = this
+			this.title=options.title
 			if(!!options.token){
 				uni.setStorageSync('userToken',options.token);
 				this.isFromAndroid = true
 			}
 			if(!!options.currentTab){
-			setTimeout(()=>{
-					this.$refs.tabs2.longClick(options.currentTab)
-				},100)
+				 that.getCur(options).then(async res => {
+					 await that.getList()
+				 })
+				 return false
 			}
-			this.title=options.title
 			await	this.getList()
 		},
 		onUnload() {
@@ -110,6 +112,15 @@
 			}
 		},
 		methods: {
+			getCur(options){
+				let that = this
+				return new Promise((reslove,reject)=>{
+					setTimeout(()=>{
+							that.$refs.tabs2.longClick(options.currentTab)
+							reslove(1)
+						},1000)
+				})
+			},
 		async	getList(){
 				let params = {
 					status: this.cur,//订单状态 已支付:1 已备货:2 已收货:3
@@ -122,8 +133,8 @@
 			confirm(val,index){
 				let that = this 
 				uni.showModal({
-					title:'收货提示',
-					content:'是否确认'+this.title=='add'?'收货':'备货'+'?确认后订单状态将改变!',
+					title:'状态提示'+'('+(val.type==1?'自提':'配送')+')',
+					content:'是否确认'+(this.title=='add'?'收货':'备货'+'?确认后订单状态将改变!'),
 					success(res) {
 						if(res.confirm){
 							if(that.title=='add'){//采购订单

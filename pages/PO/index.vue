@@ -25,8 +25,8 @@
 					<view class="flex flex-center mr-sm"><image src="../../static/store.png" mode=""></image></view>
 					<view>{{ goods.compName }}</view>
 				</view>
-				<!-- @click="callPhone(goods.compPhone )" -->
-				<view class="callphone">
+				<!-- @click="callPhone(goods.compPhone)" -->
+				<view class="callphone" @click="callPhone(goods.compPhone)">
 					<text class="alIcon">&#xe682;</text>
 					<!-- <text class="ml-xs">联系商家</text> -->
 					<text class="ml-xs">{{ goods.compPhone }}</text>
@@ -50,10 +50,15 @@
 				<input type="number" v-model="goodsNum" placeholder-style="font-size:20upx" :placeholder="'最少起批数量' + goods.wholesaleNum" />
 				<text class="ml">袋</text>
 			</view>
+			<!-- <view class="num mt-sm flex" v-if="goods.type == 1">
+					车&#8197;&#8197;牌&#8197;&#8197;号：
+					<input placeholder="请输入车牌号" placeholder-style="font-size:20upx" disabled="true" @tap="plateShow=true" v-model.trim="plateNo"></input>
+					<plate-input v-if="plateShow" :plate="plateNo" @export="setPlate" @close="plateShow=false"></plate-input>
+				</view> -->
 			<view class="flex mt">
 				<view class="title left-title">{{ goods.type == 1 ? '自提' : '配送' }}时间：</view>
 				<view class="right-time">
-					<pickerTime style="width: 100%;" @changeTime="changeTime" :sTime="sTime" :cTime="cTime">
+					<pickerTime ref='time' style="width: 100%;" @changeTime="changeTime" :sTime="sTime" :cTime="cTime">
 						<view slot="pCon" class="mr-sm font-info flex flex-sp center" @click="selectTime('datetime')">
 							<view>{{ timer }}</view>
 							<view class="alIcon">&#xe600;</view>
@@ -63,7 +68,7 @@
 			</view>
 			<view class="remarsk">
 				<view class="mt mb">订单留言</view>
-				<view class="area flex flex-center"><textarea v-model="textarea" placeholder="想对此次交易说点什么?" /></view>
+				<view class="area flex flex-center"><textarea v-model="textarea" placeholder="请输入备注、车牌号!" /></view>
 			</view>
 		</view>
 		<view class="footer flex flex-sp">
@@ -84,9 +89,11 @@
 import { mapState, mapActions, mapMutations } from 'vuex';
 import pickerTime from '@/components/select-time/picker2.vue';
 // import clay from "@/components/clay-time/index.vue"//时间选择组件
+import plateInput from '@/components/clay-car/index.vue'
 export default {
 	components: {
-		pickerTime
+		pickerTime,
+		plateInput
 		// clay
 	},
 	computed: {
@@ -118,21 +125,29 @@ export default {
 			goodsNum: '', //购买数量
 			textarea: '', //订单留言
 			sTime: 0, //开始时间
-			cTime: 23 //结束时间
+			cTime: 23 ,//结束时间
+			plateNo:'',
+			plateShow:false
 		};
 	},
 	async onLoad(options) {
 		let that = this;
 		let res = await this.$api.echoGoodsInfo(options.id);
 		that.goods = res;
-		that.sTime = Number(res.startHours.split(':')[0]);
+		// that.sTime = Number(res.startHours.split(':')[0]);
+		that.$set(that, 'sTime', Number(res.startHours.split(':')[0]));
 		that.$set(that, 'cTime', Number(res.endHours.split(':')[0]));
 		this.showAddress();
 		this.getTimes();
+		console.log(this.$refs.time)
 	},
 	methods: {
 		...mapActions(['showAddress']),
 		...mapMutations(['order_pay']),
+		setPlate(plate){
+						if(plate.length >= 7) this.plateNo = plate
+						this.plateShow = false
+					},
 		kxdatetime(e) {
 			this.date = e;
 		},
@@ -146,19 +161,8 @@ export default {
 			let min = date.getMinutes(); //获取当前分钟
 			let day = date.toLocaleDateString(); //获取当前日期
 			if (sHour < hour) {
-				//未超过配送时间
 				startTime = hour;
-				// if(sMin<=min){//未超过配送分钟
-
-				// }else{//超过配送分钟
-
-				// }
 			}
-			// else if(){//超过起始配送时间但不超过结束配送时间
-
-			// }
-			console.log(hour, min, day);
-			// if(time)
 		},
 		pay() {
 			if (Number(this.goodsNum) < Number(this.goods.wholesaleNum)) {
@@ -183,6 +187,13 @@ export default {
 				});
 				return false;
 			}
+			// if(this.plateNo==''&&this.goods.type == 1){
+			// 	uni.showToast({
+			// 		title: '请输入车牌号',
+			// 		icon: 'none'
+			// 	});
+			// 	return false;
+			// }
 			let params = {
 				bulkGoodsId: this.goods.id,
 				num: this.goodsNum,
@@ -213,6 +224,12 @@ export default {
 								phoneNumber: val
 							});
 						}
+					},
+					fail(err) {
+						uni.showToast({
+							title:'拨打失败'+err,
+							icon:'none'
+						})
 					}
 				});
 			} else {
@@ -222,8 +239,7 @@ export default {
 				});
 			}
 		},
-		changeTime(val, val2) {
-			console.log(val,val2)
+		changeTime(val) {
 			let end = Number(val.split(' ')[1]) + 1;
 			let ends = '00';
 			if (Number(end) > 23) {
@@ -361,4 +377,17 @@ export default {
 .left-title {
 	width: 222upx;
 }
+.cu-form-group {
+		border-top: 1px solid #eee;
+		border-bottom: 1px solid #eee;
+		background-color: #ffffff;
+		padding: 1upx 30upx;
+		display: -webkit-box;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+		align-items: center;
+		min-height: 100upx;
+		justify-content: space-between;
+	}
 </style>

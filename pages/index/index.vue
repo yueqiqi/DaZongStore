@@ -36,6 +36,7 @@ async	onLoad(options) {
 	if(!!options.token){
 		uni.setStorageSync('userToken',options.token);
 	}
+		// uni.setStorageSync('userToken','5792e935-7f6c-45d0-b01f-108c5ae8c26f');
 	await	this.getCategoryList()
 		this.endList =	this.leftCategoryList.filter(val => {
 				return val.parentid==this.tabTitle[0].id

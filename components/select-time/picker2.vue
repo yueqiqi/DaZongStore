@@ -58,7 +58,7 @@ export default {
 		};
 	},
 	beforeMount() {
-		
+		this.pickerTap();
 	},
 	watch: {
 		cTime(newVal, oldVal) {
